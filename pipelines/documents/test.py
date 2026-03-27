@@ -1,6 +1,6 @@
 from pipelines.documents.pipeline import run_document_pipeline
 
-file_path = "sample.pdf"  # change this
+file_path = "sample_3.pdf"  # change if needed
 
 chunks = run_document_pipeline(file_path)
 
