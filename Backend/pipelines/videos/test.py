@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import sys
 from urllib.error import URLError
@@ -12,9 +13,10 @@ if BACKEND_DIR not in sys.path:
 from pipelines.videos.pipeline import run_video_pipeline
 
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Run the video pipeline and print sample chunks and embedding info."
+        description="Run the video pipeline and print structured records."
     )
     parser.add_argument(
         "file_path",
@@ -33,6 +35,7 @@ def parse_args():
         help="Optional language code for Whisper, for example 'en'.",
     )
     return parser.parse_args()
+
 
 
 def main():
@@ -57,25 +60,20 @@ def main():
         print(f"Pipeline failed: {exc}")
         return 1
 
-    chunks = result["chunks"]
-    timestamped_chunks = result["timestamped_chunks"]
-    embeddings = result["embeddings"]
+    records = result["records"]
 
-    print("\n--- SAMPLE CHUNKS ---")
-    for index, chunk in enumerate(timestamped_chunks[:3], start=1):
-        print(
-            f"\nChunk {index} "
-            f"[{chunk['start_timestamp']} -> {chunk['end_timestamp']}]:\n"
-            f"{chunk['text'][200]}..."
-        )
+    print("\n--- SAMPLE RECORDS ---")
+    for record in records[:3]:
+        preview_record = {
+            "text": record["text"][:200] + ("..." if len(record["text"]) > 200 else ""),
+            "embedding": record["embedding"][:5],
+            "metadata": record["metadata"],
+        }
+        print(json.dumps(preview_record, indent=2))
 
     print("\n--- EMBEDDING INFO ---")
-    print("Total embeddings:", len(embeddings))
-    print("Embedding dimension:", len(embeddings[0]) if len(embeddings) else 0)
-
-    if len(embeddings):
-        print("\nSample embedding (first 5 values):")
-        print(embeddings[0][:5])
+    print("Total records:", len(records))
+    print("Embedding dimension:", len(records[0]["embedding"]) if records else 0)
 
     return 0
 

@@ -1,3 +1,5 @@
+import os
+
 from pipelines.videos.extractor import extract_transcript
 from processing.cleaner import clean_text
 
@@ -108,6 +110,7 @@ def run_video_pipeline(
     language=None,
     max_words=400,
     overlap=50,
+    source_id=None,
 ):
     print("Starting video pipeline...")
 
@@ -149,10 +152,24 @@ def run_video_pipeline(
     embedding_cols = len(embeddings[0]) if embedding_rows else 0
     print(f"Embeddings shape: {embedding_rows} x {embedding_cols}")
 
+    source_name = source_id or os.path.basename(file_path)
+    records = []
+    for chunk, embedding in zip(timestamped_chunks, embeddings):
+        records.append(
+            {
+                "text": chunk["text"],
+                "embedding": embedding.tolist(),
+                "metadata": {
+                    "start": chunk["start"],
+                    "end": chunk["end"],
+                    "source": source_name,
+                },
+            }
+        )
+
     return {
         "text": text,
         "cleaned_text": cleaned,
-        "chunks": chunks,
         "timestamped_chunks": timestamped_chunks,
-        "embeddings": embeddings,
+        "records": records,
     }
