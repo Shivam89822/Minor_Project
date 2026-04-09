@@ -1,4 +1,4 @@
-function Navbar() {
+function Navbar({ onOpenAuth }) {
   return (
     <header className="navbar">
       <div className="navbar__brand">
@@ -26,10 +26,18 @@ function Navbar() {
       </nav>
 
       <div className="navbar__actions">
-        <button type="button" className="navbar__action navbar__action--secondary">
+        <button
+          type="button"
+          className="navbar__action navbar__action--secondary"
+          onClick={() => onOpenAuth('signup')}
+        >
           Sign Up
         </button>
-        <button type="button" className="navbar__action navbar__action--primary">
+        <button
+          type="button"
+          className="navbar__action navbar__action--primary"
+          onClick={() => onOpenAuth('login')}
+        >
           Login
         </button>
       </div>

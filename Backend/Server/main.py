@@ -4,8 +4,16 @@ import tempfile
 
 from fastapi import FastAPI
 from fastapi import Form
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def home():
@@ -13,6 +21,7 @@ def home():
 
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 from database import SessionLocal, engine, Base
 import models, schemas
@@ -32,6 +41,9 @@ def get_db():
 
 @app.post("/register")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
     
     hashed_pwd = hash_password(user.password)
 
@@ -46,7 +58,6 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     return {"message": "User created successfully"}
 
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from utils.security import verify_password

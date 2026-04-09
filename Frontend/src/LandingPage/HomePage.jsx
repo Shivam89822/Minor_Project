@@ -1,7 +1,34 @@
-import Navbar from './Navbar';
-import Footer from './Footer';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Navbar from './Navbar'
+import Footer from './Footer'
+import AuthModal from '../components/AuthModal'
+
+const API_BASE_URL = 'http://127.0.0.1:8000'
+
+const authCopy = {
+  login: {
+    title: 'Welcome back',
+    subtitle: 'Sign in to continue building assistants from your files.',
+    submitLabel: 'Login',
+    switchLabel: "Don't have an account?",
+    switchAction: 'Create one',
+  },
+  signup: {
+    title: 'Create your account',
+    subtitle: 'Start your workspace and unlock your assistant dashboard.',
+    submitLabel: 'Sign Up',
+    switchLabel: 'Already registered?',
+    switchAction: 'Login instead',
+  },
+}
 
 export default function HomePage() {
+  const navigate = useNavigate()
+  const [authMode, setAuthMode] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
   const features = [
     {
       title: 'Create AI assistants',
@@ -20,9 +47,76 @@ export default function HomePage() {
     },
   ]
 
+  const closeAuth = () => {
+    setAuthMode(null)
+    setErrorMessage('')
+    setIsSubmitting(false)
+  }
+
+  const openAuth = (mode) => {
+    setAuthMode(mode)
+    setErrorMessage('')
+    setIsSubmitting(false)
+  }
+
+  const handleAuthSubmit = async ({ email, password }) => {
+    setIsSubmitting(true)
+    setErrorMessage('')
+
+    try {
+      if (authMode === 'signup') {
+        const registerResponse = await fetch(`${API_BASE_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        })
+
+        const registerData = await registerResponse.json()
+
+        if (!registerResponse.ok) {
+          throw new Error(registerData.detail || registerData.message || 'Unable to sign up')
+        }
+      }
+
+      const loginBody = new URLSearchParams({
+        username: email,
+        password,
+      })
+
+      const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: loginBody.toString(),
+      })
+
+      const loginData = await loginResponse.json()
+
+      if (!loginResponse.ok) {
+        throw new Error(loginData.detail || 'Unable to login')
+      }
+
+      localStorage.setItem('token', loginData.access_token)
+      localStorage.setItem('userEmail', email)
+      closeAuth()
+      navigate('/dashboard')
+    } catch (error) {
+      const message =
+        error instanceof TypeError
+          ? 'Cannot reach the backend server on http://127.0.0.1:8000. Start the FastAPI backend and try again.'
+          : error.message || 'Something went wrong'
+
+      setErrorMessage(message)
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="app-shell">
-      <Navbar />
+      <Navbar onOpenAuth={openAuth} />
 
       <main className="hero-panel">
         <span className="hero-panel__badge">Knowledge-powered AI</span>
@@ -78,6 +172,17 @@ export default function HomePage() {
       </main>
 
       <Footer />
+
+      <AuthModal
+        isOpen={Boolean(authMode)}
+        mode={authMode ?? 'login'}
+        copy={authCopy[authMode ?? 'login']}
+        isSubmitting={isSubmitting}
+        errorMessage={errorMessage}
+        onClose={closeAuth}
+        onModeChange={openAuth}
+        onSubmit={handleAuthSubmit}
+      />
     </div>
   )
 }
