@@ -1,51 +1,6 @@
-const stats = [
-  { label: 'Assistants', value: '5', icon: 'assistant' },
-  { label: 'Knowledge Sources', value: '93', icon: 'document' },
-  { label: 'Conversations', value: '247', icon: 'chat' },
-]
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 
-const assistants = [
-  {
-    name: 'Product Docs Bot',
-    description: 'Answers questions about product features, pricing, and onboarding guides.',
-    sources: '24 sources',
-    updated: '2h ago',
-    status: 'Training',
-    statusTone: 'warning',
-  },
-  {
-    name: 'Legal Assistant',
-    description: 'Reviews contracts and answers policy-related queries from uploaded legal docs.',
-    sources: '18 sources',
-    updated: '1d ago',
-    status: 'Draft',
-    statusTone: 'draft',
-  },
-  {
-    name: 'HR Policy Bot',
-    description: 'Trained on employee handbook and company policies.',
-    sources: '12 sources',
-    updated: '3h ago',
-    status: 'Training',
-    statusTone: 'warning',
-  },
-  {
-    name: 'Code Review Helper',
-    description: 'Understands your codebase docs and helps with code reviews.',
-    sources: '8 sources',
-    updated: '5d ago',
-    status: 'Draft',
-    statusTone: 'draft',
-  },
-  {
-    name: 'Sales Enablement',
-    description: 'Assists sales team with product info, case studies, and competitive intel.',
-    sources: '31 sources',
-    updated: '12h ago',
-    status: 'Active',
-    statusTone: 'success',
-  },
-]
+const API_BASE_URL = 'http://127.0.0.1:8000'
 
 const quickActions = [
   {
@@ -67,33 +22,6 @@ const quickActions = [
     title: 'Analytics',
     description: 'View performance stats',
     icon: 'chart',
-  },
-]
-
-const recentActivity = [
-  {
-    title: 'Chat with Product Docs...',
-    detail: 'Asked about pricing tiers',
-    time: '2 min ago',
-    icon: 'chat',
-  },
-  {
-    title: 'Uploaded 3 PDF files',
-    detail: 'Added to Legal Assistant knowledge base',
-    time: '1 hour ago',
-    icon: 'upload',
-  },
-  {
-    title: 'Created HR Policy Bot',
-    detail: 'New assistant with 12 documents',
-    time: '3 hours ago',
-    icon: 'assistant',
-  },
-  {
-    title: 'Chat with Code Review ...',
-    detail: 'Reviewed pull request #142',
-    time: 'Yesterday',
-    icon: 'chat',
   },
 ]
 
@@ -123,7 +51,344 @@ function DashboardIcon({ type }) {
   )
 }
 
+function formatTimestamp(value) {
+  if (!value) {
+    return 'Just now'
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return 'Just now'
+  }
+
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function CreateAssistantModal({
+  isOpen,
+  onClose,
+  onCreated,
+}) {
+  const [assistantName, setAssistantName] = useState('')
+  const [selectedFiles, setSelectedFiles] = useState([])
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (!isOpen) {
+      setAssistantName('')
+      setSelectedFiles([])
+      setErrorMessage('')
+      setIsSubmitting(false)
+    }
+  }, [isOpen])
+
+  if (!isOpen) {
+    return null
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setErrorMessage('')
+
+    if (!assistantName.trim()) {
+      setErrorMessage('Assistant name is required.')
+      return
+    }
+
+    if (selectedFiles.length === 0) {
+      setErrorMessage('Please upload at least one PDF or video file.')
+      return
+    }
+
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setErrorMessage('Login expired. Please login again.')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('assistant_name', assistantName.trim())
+    selectedFiles.forEach((file) => {
+      formData.append('files', file)
+    })
+
+    try {
+      setIsSubmitting(true)
+      const response = await fetch(`${API_BASE_URL}/assistants`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || 'Unable to create assistant.')
+      }
+
+      onCreated(data.assistant)
+      onClose()
+    } catch (error) {
+      setErrorMessage(error.message || 'Unable to create assistant.')
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="auth-modal-overlay" onClick={onClose} role="presentation">
+      <section
+        className="auth-modal dashboard-create-modal"
+        onClick={(event) => event.stopPropagation()}
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="create-assistant-title"
+      >
+        <button type="button" className="auth-modal__close" onClick={onClose} aria-label="Close">
+          x
+        </button>
+
+        <div className="auth-modal__glow" aria-hidden="true" />
+        <span className="auth-modal__badge">New assistant</span>
+        <h2 id="create-assistant-title">Create your next AI assistant</h2>
+        <p className="auth-modal__subtitle">
+          Add an assistant name, upload PDFs or videos, and we will start embedding them right away.
+        </p>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label className="auth-form__field">
+            <span>Assistant Name</span>
+            <input
+              type="text"
+              value={assistantName}
+              onChange={(event) => setAssistantName(event.target.value)}
+              placeholder="e.g. Product Knowledge Bot"
+              required
+            />
+          </label>
+
+          <label className="auth-form__field">
+            <span>Knowledge Files</span>
+            <input
+              type="file"
+              accept=".pdf,.docx,video/*"
+              multiple
+              onChange={(event) => setSelectedFiles(Array.from(event.target.files || []))}
+              required
+            />
+          </label>
+
+          {selectedFiles.length > 0 ? (
+            <div className="dashboard-file-list">
+              {selectedFiles.map((file) => (
+                <span key={`${file.name}-${file.lastModified}`} className="dashboard-file-pill">
+                  {file.name}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          {errorMessage ? <p className="auth-form__error">{errorMessage}</p> : null}
+
+          <button type="submit" className="auth-form__submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Starting assistant...' : 'Create Assistant'}
+          </button>
+        </form>
+      </section>
+    </div>
+  )
+}
+
 function Dashboard() {
+  const [assistants, setAssistants] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [dashboardError, setDashboardError] = useState('')
+
+  const token = localStorage.getItem('token')
+
+  const fetchAssistants = useEffectEvent(async ({ silent = false } = {}) => {
+    if (!token) {
+      setDashboardError('Missing login token. Please login again.')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      if (!silent) {
+        setIsLoading(true)
+      }
+
+      const response = await fetch(`${API_BASE_URL}/assistants`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || 'Unable to load assistants.')
+      }
+
+      setAssistants(data.assistants || [])
+      setDashboardError('')
+    } catch (error) {
+      setDashboardError(error.message || 'Unable to load assistants.')
+    } finally {
+      if (!silent) {
+        setIsLoading(false)
+      }
+    }
+  })
+
+  useEffect(() => {
+    fetchAssistants()
+  }, [])
+
+  useEffect(() => {
+    if (!assistants.some((assistant) => assistant.status === 'training')) {
+      return undefined
+    }
+
+    const intervalId = window.setInterval(() => {
+      fetchAssistants({ silent: true })
+    }, 4000)
+
+    return () => window.clearInterval(intervalId)
+  }, [assistants])
+
+  const stats = useMemo(() => {
+    const activeAssistants = assistants.filter((assistant) => assistant.status === 'active').length
+    const trainingAssistants = assistants.filter((assistant) => assistant.status === 'training').length
+    const totalSources = assistants.reduce((sum, assistant) => sum + (assistant.source_count || 0), 0)
+
+    return [
+      { label: 'Assistants', value: String(assistants.length), icon: 'assistant' },
+      { label: 'Knowledge Sources', value: String(totalSources), icon: 'document' },
+      { label: 'Active Now', value: String(activeAssistants || trainingAssistants), icon: 'chat' },
+    ]
+  }, [assistants])
+
+  const recentActivity = useMemo(() => {
+    return assistants.slice(0, 4).map((assistant) => ({
+      title: assistant.name,
+      detail:
+        assistant.status === 'active'
+          ? `Assistant is ready with ${assistant.source_count} sources`
+          : assistant.status === 'failed'
+            ? assistant.last_error || 'Embedding failed. Try again with another name or file set.'
+            : 'Embeddings are still processing in the background',
+      time: formatTimestamp(assistant.updated_at),
+      icon: assistant.status === 'active' ? 'assistant' : assistant.status === 'failed' ? 'document' : 'spark',
+    }))
+  }, [assistants])
+
+  const handleAssistantCreated = (assistant) => {
+    setAssistants((current) => [assistant, ...current])
+  }
+
+  const renderAssistantBody = () => {
+    if (isLoading) {
+      return <div className="dashboard-empty-state">Loading assistants...</div>
+    }
+
+    if (dashboardError) {
+      return <div className="dashboard-empty-state dashboard-empty-state--error">{dashboardError}</div>
+    }
+
+    if (assistants.length === 0) {
+      return (
+        <div className="dashboard-empty-state">
+          <div className="assistant-card__create-icon">
+            <DashboardIcon type="plus" />
+          </div>
+          <h3>No assistants yet</h3>
+          <p>Create your first assistant by uploading PDFs or videos.</p>
+          <button
+            type="button"
+            className="dashboard-button dashboard-button--primary"
+            onClick={() => setIsCreateOpen(true)}
+          >
+            <DashboardIcon type="plus" />
+            <span>Create Assistant</span>
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <div className="assistant-grid">
+        {assistants.map((assistant) => (
+          <article key={assistant.id} className="assistant-card">
+            <div className="assistant-card__icon">
+              <DashboardIcon type="assistant" />
+            </div>
+
+            <h3>{assistant.name}</h3>
+            <p>
+              {assistant.status === 'active'
+                ? 'Embeddings are ready and this assistant can now be used across your workspace.'
+                : assistant.status === 'failed'
+                  ? assistant.last_error || 'Assistant creation failed during embedding.'
+                  : 'Files uploaded successfully. Embeddings are still being generated.'}
+            </p>
+
+            <div className="assistant-card__meta">
+              <span>
+                <DashboardIcon type="document" />
+                {assistant.source_count} sources
+              </span>
+              <span>
+                <DashboardIcon type="clock" />
+                {formatTimestamp(assistant.updated_at)}
+              </span>
+            </div>
+
+            <div className="assistant-card__footer">
+              <span className={`assistant-status assistant-status--${assistant.status}`}>
+                <i />
+                {assistant.status === 'active'
+                  ? 'Active'
+                  : assistant.status === 'failed'
+                    ? 'Failed'
+                    : 'Training'}
+              </span>
+              <button type="button" className="assistant-card__chat" disabled>
+                <DashboardIcon type="chat" />
+                Open Soon
+              </button>
+            </div>
+          </article>
+        ))}
+
+        <article
+          className="assistant-card assistant-card--create"
+          onClick={() => setIsCreateOpen(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              setIsCreateOpen(true)
+            }
+          }}
+        >
+          <div className="assistant-card__create-icon">
+            <DashboardIcon type="plus" />
+          </div>
+          <h3>Create New Assistant</h3>
+          <p>Upload docs &amp; start building</p>
+        </article>
+      </div>
+    )
+  }
+
   return (
     <main className="dashboard-shell">
       <div className="dashboard-layout">
@@ -140,11 +405,15 @@ function Dashboard() {
           <div className="dashboard-search">
             <DashboardIcon type="search" />
             <span>Search assistants, documents...</span>
-            <div className="dashboard-search__shortcut">⌘K</div>
+            <div className="dashboard-search__shortcut">Ctrl K</div>
           </div>
 
           <div className="dashboard-topbar__actions">
-            <button type="button" className="dashboard-button dashboard-button--primary">
+            <button
+              type="button"
+              className="dashboard-button dashboard-button--primary"
+              onClick={() => setIsCreateOpen(true)}
+            >
               <DashboardIcon type="plus" />
               <span>New Assistant</span>
             </button>
@@ -154,7 +423,7 @@ function Dashboard() {
             </button>
             <button type="button" className="dashboard-profile" aria-label="Profile">
               <span className="dashboard-profile__avatar" />
-              <span className="dashboard-profile__caret">⌄</span>
+              <span className="dashboard-profile__caret">v</span>
             </button>
           </div>
         </header>
@@ -189,51 +458,11 @@ function Dashboard() {
           <div className="dashboard-main__content">
             <div className="dashboard-section-heading">
               <h2>Your Assistants</h2>
-              <button type="button">View All</button>
+              <button type="button" onClick={() => fetchAssistants()}>
+                Refresh
+              </button>
             </div>
-
-            <div className="assistant-grid">
-              {assistants.map((assistant) => (
-                <article key={assistant.name} className="assistant-card">
-                  <div className="assistant-card__icon">
-                    <DashboardIcon type="assistant" />
-                  </div>
-
-                  <h3>{assistant.name}</h3>
-                  <p>{assistant.description}</p>
-
-                  <div className="assistant-card__meta">
-                    <span>
-                      <DashboardIcon type="document" />
-                      {assistant.sources}
-                    </span>
-                    <span>
-                      <DashboardIcon type="clock" />
-                      {assistant.updated}
-                    </span>
-                  </div>
-
-                  <div className="assistant-card__footer">
-                    <span className={`assistant-status assistant-status--${assistant.statusTone}`}>
-                      <i />
-                      {assistant.status}
-                    </span>
-                    <button type="button" className="assistant-card__chat">
-                      <DashboardIcon type="chat" />
-                      Chat
-                    </button>
-                  </div>
-                </article>
-              ))}
-
-              <article className="assistant-card assistant-card--create">
-                <div className="assistant-card__create-icon">
-                  <DashboardIcon type="plus" />
-                </div>
-                <h3>Create New Assistant</h3>
-                <p>Upload docs &amp; start building</p>
-              </article>
-            </div>
+            {renderAssistantBody()}
           </div>
 
           <aside className="dashboard-sidebar">
@@ -258,27 +487,39 @@ function Dashboard() {
             <section className="dashboard-panel">
               <div className="dashboard-panel__heading">
                 <h2>Recent Activity</h2>
-                <button type="button">View all →</button>
+                <button type="button">View all</button>
               </div>
 
               <div className="activity-list">
-                {recentActivity.map((item) => (
-                  <article key={item.title} className="activity-item">
-                    <div className="activity-item__icon">
-                      <DashboardIcon type={item.icon} />
-                    </div>
-                    <div className="activity-item__content">
-                      <h3>{item.title}</h3>
-                      <p>{item.detail}</p>
-                    </div>
-                    <span className="activity-item__time">{item.time}</span>
-                  </article>
-                ))}
+                {recentActivity.length > 0 ? (
+                  recentActivity.map((item) => (
+                    <article key={`${item.title}-${item.time}`} className="activity-item">
+                      <div className="activity-item__icon">
+                        <DashboardIcon type={item.icon} />
+                      </div>
+                      <div className="activity-item__content">
+                        <h3>{item.title}</h3>
+                        <p>{item.detail}</p>
+                      </div>
+                      <span className="activity-item__time">{item.time}</span>
+                    </article>
+                  ))
+                ) : (
+                  <div className="dashboard-empty-state dashboard-empty-state--compact">
+                    Recent assistant activity will appear here once you create one.
+                  </div>
+                )}
               </div>
             </section>
           </aside>
         </section>
       </div>
+
+      <CreateAssistantModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onCreated={handleAssistantCreated}
+      />
     </main>
   )
 }

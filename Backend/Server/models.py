@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Integer, String
 from database import Base
 
 class User(Base):
@@ -30,3 +32,17 @@ class File(Base):
 
     workspace_id = Column(Integer, ForeignKey("workspaces.id"))
     user_email = Column(String, ForeignKey("users.email"))
+
+
+class Assistant(Base):
+    __tablename__ = "assistants"
+
+    id = Column(Integer, primary_key=True, index=True)
+    assistant_id = Column(String, unique=True, index=True)
+    name = Column(String, unique=True, index=True)
+    status = Column(String, default="training")
+    source_count = Column(Integer, default=0)
+    user_email = Column(String, ForeignKey("users.email"))
+    last_error = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

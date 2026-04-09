@@ -23,3 +23,15 @@ class WorkspaceCreate(BaseModel):
 class AssistantEmbeddingURLCreate(BaseModel):
     assistant_name: str
     cloudinary_url: str
+
+
+class AssistantRead(BaseModel):
+    id: int
+    assistant_id: str
+    name: str
+    status: str
+    source_count: int
+    user_email: str
+    last_error: str | None = None
+    created_at: str
+    updated_at: str

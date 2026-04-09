@@ -1,0 +1,6 @@
+{
+  "assistant_id": "shivam-assitant1",
+  "assistant_name": "Shivam_Assitant1",
+  "persist_directory": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\shivam-assitant1",
+  "collection_name": "knowledge_base"
+}

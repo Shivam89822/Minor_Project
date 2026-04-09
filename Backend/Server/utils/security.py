@@ -1,4 +1,13 @@
+import bcrypt as bcrypt_module
 from passlib.context import CryptContext
+
+# Passlib 1.7.x still looks for bcrypt.__about__.__version__ on import.
+# Newer bcrypt releases removed that attribute, so we provide a tiny shim.
+if not hasattr(bcrypt_module, "__about__"):
+    class _BcryptAbout:
+        __version__ = getattr(bcrypt_module, "__version__", "unknown")
+
+    bcrypt_module.__about__ = _BcryptAbout()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

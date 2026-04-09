@@ -947,6 +947,33 @@ body {
   background: #22c55e;
 }
 
+.assistant-status--training {
+  background: rgba(115, 86, 35, 0.38);
+  color: #f2c86d;
+}
+
+.assistant-status--training i {
+  background: #f7b933;
+}
+
+.assistant-status--active {
+  background: rgba(39, 100, 67, 0.34);
+  color: #59d98b;
+}
+
+.assistant-status--active i {
+  background: #22c55e;
+}
+
+.assistant-status--failed {
+  background: rgba(123, 36, 69, 0.34);
+  color: #ff8db2;
+}
+
+.assistant-status--failed i {
+  background: #ff5f93;
+}
+
 .assistant-card__chat {
   display: inline-flex;
   align-items: center;
@@ -955,6 +982,11 @@ body {
   border-radius: 14px;
   background: rgba(85, 62, 143, 0.58);
   color: #d7c3ff;
+}
+
+.assistant-card__chat:disabled {
+  opacity: 0.82;
+  cursor: not-allowed;
 }
 
 .assistant-card__chat .dashboard-icon {
@@ -971,6 +1003,7 @@ body {
   background:
     radial-gradient(circle at center, rgba(139, 92, 246, 0.08), transparent 55%),
     rgba(27, 22, 43, 0.88);
+  cursor: pointer;
 }
 
 .assistant-card__create-icon {
@@ -1053,6 +1086,69 @@ body {
   font-size: 0.96rem;
   white-space: nowrap;
   padding-top: 6px;
+}
+
+.dashboard-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  min-height: 340px;
+  padding: 42px 26px;
+  border: 1px dashed rgba(122, 84, 180, 0.36);
+  border-radius: 28px;
+  background: rgba(24, 21, 37, 0.84);
+  text-align: center;
+  color: var(--theme-body);
+}
+
+.dashboard-empty-state h3 {
+  margin: 0;
+  color: var(--theme-heading);
+  font-size: 1.2rem;
+}
+
+.dashboard-empty-state p {
+  max-width: 420px;
+  margin: 0;
+}
+
+.dashboard-empty-state--error {
+  justify-items: start;
+  min-height: auto;
+  text-align: left;
+  color: #ffb3d1;
+  border-style: solid;
+  background: rgba(86, 23, 45, 0.16);
+}
+
+.dashboard-empty-state--compact {
+  display: block;
+  min-height: auto;
+  padding: 18px 0 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.dashboard-create-modal {
+  width: min(100%, 560px);
+}
+
+.dashboard-file-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dashboard-file-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid rgba(131, 92, 199, 0.26);
+  border-radius: 999px;
+  background: rgba(44, 43, 62, 0.7);
+  color: #ddd0ff;
+  font-size: 0.9rem;
 }
 
 @keyframes authOverlayFade {
