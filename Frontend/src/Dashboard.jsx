@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const API_BASE_URL = 'http://127.0.0.1:8000'
 
@@ -206,6 +207,7 @@ function CreateAssistantModal({
 }
 
 function Dashboard() {
+  const navigate = useNavigate()
   const [assistants, setAssistants] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -359,9 +361,13 @@ function Dashboard() {
                     ? 'Failed'
                     : 'Training'}
               </span>
-              <button type="button" className="assistant-card__chat" disabled>
+              <button
+                type="button"
+                className="assistant-card__chat"
+                onClick={() => navigate(`/assistants/${assistant.assistant_id}`)}
+              >
                 <DashboardIcon type="chat" />
-                Open Soon
+                Open Chat
               </button>
             </div>
           </article>

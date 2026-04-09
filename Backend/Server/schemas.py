@@ -35,3 +35,8 @@ class AssistantRead(BaseModel):
     last_error: str | None = None
     created_at: str
     updated_at: str
+
+
+class AssistantChatRequest(BaseModel):
+    question: str
+    top_k: int = 4

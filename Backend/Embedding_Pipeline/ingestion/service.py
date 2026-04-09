@@ -51,22 +51,33 @@ def _download_url_to_temp_file(source_url):
             return temp_file.name
 
 
+def _normalize_source(source):
+    if isinstance(source, dict):
+        return source
+    return {
+        "path": source,
+        "source_name": source,
+    }
+
+
 def _collect_chunks_from_single_source(source):
+    source_payload = _normalize_source(source)
     temp_path = None
-    source_path = source
+    source_path = source_payload["path"]
+    source_name = source_payload.get("source_name") or source_path
 
     try:
-        if _is_url(source):
-            temp_path = _download_url_to_temp_file(source)
+        if _is_url(source_path):
+            temp_path = _download_url_to_temp_file(source_path)
             source_path = temp_path
 
         extension = os.path.splitext(source_path)[1].lower()
         if extension in SUPPORTED_DOCUMENT_EXTENSIONS:
-            result = run_document_pipeline(source_path, source_id=source)
+            result = run_document_pipeline(source_path, source_id=source_name)
         elif extension in SUPPORTED_VIDEO_EXTENSIONS:
-            result = run_video_pipeline(source_path, source_id=source)
+            result = run_video_pipeline(source_path, source_id=source_name)
         else:
-            raise ValueError(f"Unsupported file type: {source}")
+            raise ValueError(f"Unsupported file type: {source_name}")
 
         return result["chunks"]
     finally:

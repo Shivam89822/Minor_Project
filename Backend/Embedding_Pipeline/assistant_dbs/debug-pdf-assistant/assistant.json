@@ -1,0 +1,6 @@
+{
+  "assistant_id": "debug-pdf-assistant",
+  "assistant_name": "debug-pdf-assistant",
+  "persist_directory": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\debug-pdf-assistant",
+  "collection_name": "knowledge_base"
+}

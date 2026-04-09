@@ -117,6 +117,7 @@ from database import get_db
 import models
 from auth import verify_token
 from ingestion.service import ingest_sources as ingest_embedding_sources
+from ingestion.service import query_assistant_knowledge
 # from pipelines.videos.pipeline import process_video
 # from pipelines.pdf.pipeline import process_pdf
 
@@ -142,7 +143,37 @@ def _assistant_slug(value: str):
     return normalized or "assistant"
 
 
-def _ingest_assistant_files(assistant_db_id: int, assistant_name: str, temp_paths: list[str]):
+def _assistant_by_slug(db: Session, assistant_id: str, current_user: str):
+    assistant = (
+        db.query(models.Assistant)
+        .filter(models.Assistant.assistant_id == assistant_id, models.Assistant.user_email == current_user)
+        .first()
+    )
+    if not assistant:
+        raise HTTPException(status_code=404, detail="Assistant not found")
+    return assistant
+
+
+def _build_source_payloads(files: list[UploadFile]):
+    source_payloads = []
+    temp_paths = []
+
+    for file in files:
+        suffix = os.path.splitext(file.filename or "")[1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+            temp_file.write(file.file.read())
+            temp_paths.append(temp_file.name)
+            source_payloads.append(
+                {
+                    "path": temp_file.name,
+                    "source_name": file.filename or os.path.basename(temp_file.name),
+                }
+            )
+
+    return source_payloads, temp_paths
+
+
+def _ingest_assistant_files(assistant_db_id: int, assistant_name: str, sources: list[dict]):
     db = SessionLocal()
     try:
         assistant_record = db.query(models.Assistant).filter(models.Assistant.id == assistant_db_id).first()
@@ -153,7 +184,7 @@ def _ingest_assistant_files(assistant_db_id: int, assistant_name: str, temp_path
             ingest_embedding_sources(
                 assistants_root=ASSISTANTS_ROOT,
                 assistant_name=assistant_name,
-                sources=temp_paths,
+                sources=sources,
                 replace_existing=False,
             )
             assistant_record.status = "active"
@@ -166,7 +197,8 @@ def _ingest_assistant_files(assistant_db_id: int, assistant_name: str, temp_path
             db.add(assistant_record)
             db.commit()
     finally:
-        for temp_path in temp_paths:
+        for source in sources:
+            temp_path = source.get("path")
             if os.path.exists(temp_path):
                 os.remove(temp_path)
         db.close()
@@ -184,6 +216,16 @@ def list_user_assistants(
         .all()
     )
     return {"assistants": [_serialize_assistant(assistant) for assistant in assistants]}
+
+
+@app.get("/assistants/{assistant_id}")
+def get_user_assistant(
+    assistant_id: str,
+    current_user: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
+    assistant = _assistant_by_slug(db, assistant_id, current_user)
+    return {"assistant": _serialize_assistant(assistant)}
 
 
 @app.post("/assistants")
@@ -209,12 +251,7 @@ def create_assistant(
     if not files:
         raise HTTPException(status_code=400, detail="Upload at least one PDF or video file.")
 
-    temp_paths = []
-    for file in files:
-        suffix = os.path.splitext(file.filename or "")[1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
-            temp_file.write(file.file.read())
-            temp_paths.append(temp_file.name)
+    source_payloads, _ = _build_source_payloads(files)
 
     new_assistant = models.Assistant(
         assistant_id=_assistant_slug(cleaned_name),
@@ -229,11 +266,109 @@ def create_assistant(
     db.commit()
     db.refresh(new_assistant)
 
-    background_tasks.add_task(_ingest_assistant_files, new_assistant.id, cleaned_name, temp_paths)
+    background_tasks.add_task(_ingest_assistant_files, new_assistant.id, cleaned_name, source_payloads)
 
     return {
         "message": "Assistant creation started",
         "assistant": _serialize_assistant(new_assistant),
+    }
+
+
+@app.post("/assistants/{assistant_id}/files")
+def add_files_to_assistant(
+    assistant_id: str,
+    background_tasks: BackgroundTasks,
+    files: list[UploadFile] = File(...),
+    current_user: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
+    assistant = _assistant_by_slug(db, assistant_id, current_user)
+
+    if not files:
+        raise HTTPException(status_code=400, detail="Upload at least one PDF or video file.")
+
+    source_payloads, _ = _build_source_payloads(files)
+
+    assistant.status = "training"
+    assistant.source_count += len(files)
+    assistant.last_error = None
+    assistant.updated_at = datetime.utcnow()
+    db.add(assistant)
+    db.commit()
+    db.refresh(assistant)
+
+    background_tasks.add_task(_ingest_assistant_files, assistant.id, assistant.name, source_payloads)
+
+    return {
+        "message": "Files uploaded. Embeddings are being merged into the assistant.",
+        "assistant": _serialize_assistant(assistant),
+    }
+
+
+@app.post("/assistants/{assistant_id}/chat")
+def chat_with_assistant(
+    assistant_id: str,
+    payload: schemas.AssistantChatRequest,
+    current_user: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
+    assistant = _assistant_by_slug(db, assistant_id, current_user)
+
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="Question is required")
+
+    if assistant.status == "failed":
+        raise HTTPException(status_code=400, detail="Assistant is in failed state. Upload more files or recreate it.")
+
+    try:
+        matches = query_assistant_knowledge(
+            assistants_root=ASSISTANTS_ROOT,
+            assistant_name=assistant.name,
+            question=question,
+            top_k=max(1, min(payload.top_k, 8)),
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=400, detail="Embeddings are still being prepared for this assistant.") from exc
+
+    formatted_matches = []
+    response_parts = []
+    for index, match in enumerate(matches, start=1):
+        metadata = match.get("metadata") or {}
+        source = metadata.get("source", "Unknown source")
+        page = metadata.get("page")
+        start = metadata.get("start")
+        end = metadata.get("end")
+
+        citation_parts = [source]
+        if page is not None:
+            citation_parts.append(f"page {page}")
+        if start is not None:
+            citation_parts.append(f"{int(start // 60):02d}:{int(start % 60):02d}")
+        if end is not None:
+            citation_parts.append(f"to {int(end // 60):02d}:{int(end % 60):02d}")
+
+        citation = " | ".join(citation_parts)
+        snippet = match.get("text", "").strip()
+        formatted_matches.append(
+            {
+                "id": match.get("id"),
+                "text": snippet,
+                "source": source,
+                "page": page,
+                "start": start,
+                "end": end,
+                "citation": citation,
+                "distance": match.get("distance"),
+            }
+        )
+        response_parts.append(f"{index}. {snippet}\nSource: {citation}")
+
+    return {
+        "assistant": _serialize_assistant(assistant),
+        "question": question,
+        "answer": "\n\n".join(response_parts) if response_parts else "No relevant context was found in this assistant's knowledge base.",
+        "matches": formatted_matches,
     }
 
 
