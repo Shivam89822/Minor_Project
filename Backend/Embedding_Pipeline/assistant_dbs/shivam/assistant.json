@@ -1,0 +1,6 @@
+{
+  "assistant_id": "shivam",
+  "assistant_name": "Shivam",
+  "persist_directory": "D:\\Minor_Project\\Backend\\assistant_dbs\\shivam",
+  "collection_name": "knowledge_base"
+}

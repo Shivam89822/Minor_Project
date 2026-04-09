@@ -1,0 +1,6 @@
+{
+  "assistant_id": "my-assistant",
+  "assistant_name": "my-assistant",
+  "persist_directory": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\my-assistant",
+  "collection_name": "knowledge_base"
+}
