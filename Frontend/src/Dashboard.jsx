@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const API_BASE_URL = 'http://127.0.0.1:8000'
@@ -264,8 +264,47 @@ function Dashboard() {
   const [dashboardError, setDashboardError] = useState('')
   const [deletingAssistantId, setDeletingAssistantId] = useState(null)
   const [assistantPendingDelete, setAssistantPendingDelete] = useState(null)
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef(null)
 
   const token = localStorage.getItem('token')
+  const userEmail = localStorage.getItem('userEmail') || 'creator@example.com'
+  const userName = localStorage.getItem('userName') || userEmail.split('@')[0] || 'Creator'
+
+  const profileInitial = useMemo(() => userName.trim().charAt(0).toUpperCase() || 'C', [userName])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userEmail')
+    setIsProfileMenuOpen(false)
+    navigate('/')
+  }
+
+  useEffect(() => {
+    if (!isProfileMenuOpen) {
+      return undefined
+    }
+
+    const handlePointerDown = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false)
+      }
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsProfileMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('mousedown', handlePointerDown)
+    window.addEventListener('keydown', handleEscape)
+
+    return () => {
+      window.removeEventListener('mousedown', handlePointerDown)
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [isProfileMenuOpen])
 
   const fetchAssistants = useEffectEvent(async ({ silent = false } = {}) => {
     if (!token) {
@@ -531,17 +570,55 @@ function Dashboard() {
               <DashboardIcon type="bell" />
               <span className="dashboard-icon-button__dot" />
             </button>
-            <button type="button" className="dashboard-profile" aria-label="Profile">
-              <span className="dashboard-profile__avatar" />
-              <span className="dashboard-profile__caret">v</span>
-            </button>
+            <div className="dashboard-profile-wrap" ref={profileMenuRef}>
+              <button
+                type="button"
+                className={`dashboard-profile${isProfileMenuOpen ? ' dashboard-profile--open' : ''}`}
+                aria-label="Profile"
+                aria-haspopup="menu"
+                aria-expanded={isProfileMenuOpen}
+                onClick={() => setIsProfileMenuOpen((current) => !current)}
+              >
+                <span className="dashboard-profile__avatar">{profileInitial}</span>
+                <span className="dashboard-profile__caret">{isProfileMenuOpen ? '^' : 'v'}</span>
+              </button>
+
+              {isProfileMenuOpen ? (
+                <div className="dashboard-profile-menu" role="menu" aria-label="Profile menu">
+                  <div className="dashboard-profile-menu__summary">
+                    <span className="dashboard-profile-menu__label">Signed in as</span>
+                    <strong>{userName}</strong>
+                    <span className="dashboard-profile-menu__email">{userEmail}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="dashboard-profile-menu__action"
+                    onClick={() => {
+                      setIsProfileMenuOpen(false)
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }}
+                    role="menuitem"
+                  >
+                    Back to top
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboard-profile-menu__action dashboard-profile-menu__action--danger"
+                    onClick={handleLogout}
+                    role="menuitem"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </header>
 
         <section className="dashboard-hero">
           <div className="dashboard-hero__content">
             <h1>
-              Welcome back, <span>Creator</span>
+              Welcome back, <span>{userName}</span>
             </h1>
             <p>
               Your AI workspace is ready. Build intelligent assistants from your documents

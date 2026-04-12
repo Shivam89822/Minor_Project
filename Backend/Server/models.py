@@ -9,6 +9,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
+    username = Column(String, nullable=True)
     password = Column(String)
 
 from sqlalchemy import Column, Integer, String, ForeignKey
@@ -37,10 +38,11 @@ class File(Base):
 
 class Assistant(Base):
     __tablename__ = "assistants"
+    __table_args__ = {"sqlite_autoincrement": True}
 
     id = Column(Integer, primary_key=True, index=True)
     assistant_id = Column(String, unique=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String, index=True)
     status = Column(String, default="training")
     source_count = Column(Integer, default=0)
     user_email = Column(String, ForeignKey("users.email"))
@@ -58,6 +60,7 @@ class Assistant(Base):
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
+    __table_args__ = {"sqlite_autoincrement": True}
 
     id = Column(Integer, primary_key=True, index=True)
     assistant_id = Column(Integer, ForeignKey("assistants.id", ondelete="CASCADE"), nullable=False)

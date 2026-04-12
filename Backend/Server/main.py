@@ -3,11 +3,13 @@ import os
 import re
 import sys
 import tempfile
+import hashlib
 from datetime import datetime
 
 from fastapi import BackgroundTasks, FastAPI
 from fastapi import Form
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 app = FastAPI()
 app.add_middleware(
@@ -33,6 +35,72 @@ from utils.security import hash_password
 # Create tables
 Base.metadata.create_all(bind=engine)
 
+
+def _ensure_user_username_column():
+    inspector = inspect(engine)
+    user_columns = {column["name"] for column in inspector.get_columns("users")}
+    if "username" in user_columns:
+        return
+
+    with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE users ADD COLUMN username VARCHAR"))
+
+
+_ensure_user_username_column()
+
+
+def _ensure_assistant_name_is_not_globally_unique():
+    inspector = inspect(engine)
+    if "assistants" not in inspector.get_table_names():
+        return
+
+    assistant_indexes = inspector.get_indexes("assistants")
+    unique_index_columns = {
+        tuple(index.get("column_names") or [])
+        for index in assistant_indexes
+        if index.get("unique")
+    }
+    name_is_unique_index = ("name",) in unique_index_columns
+
+    if not name_is_unique_index:
+        table_sql_row = engine.connect().execute(
+            text("SELECT sql FROM sqlite_master WHERE type='table' AND name='assistants'")
+        ).fetchone()
+        table_sql = ((table_sql_row[0] if table_sql_row else "") or "").upper()
+        if "NAME VARCHAR UNIQUE" not in table_sql and "UNIQUE (NAME)" not in table_sql:
+            return
+
+    with engine.begin() as connection:
+        connection.execute(text("PRAGMA foreign_keys=OFF"))
+        connection.execute(text("""
+            CREATE TABLE assistants_new (
+                id INTEGER NOT NULL PRIMARY KEY,
+                assistant_id VARCHAR,
+                name VARCHAR,
+                status VARCHAR,
+                source_count INTEGER,
+                user_email VARCHAR,
+                last_error VARCHAR,
+                created_at DATETIME,
+                updated_at DATETIME,
+                FOREIGN KEY(user_email) REFERENCES users (email)
+            )
+        """))
+        connection.execute(text("""
+            INSERT INTO assistants_new (id, assistant_id, name, status, source_count, user_email, last_error, created_at, updated_at)
+            SELECT id, assistant_id, name, status, source_count, user_email, last_error, created_at, updated_at
+            FROM assistants
+        """))
+        connection.execute(text("DROP TABLE assistants"))
+        connection.execute(text("ALTER TABLE assistants_new RENAME TO assistants"))
+        connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_assistants_assistant_id ON assistants (assistant_id)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_assistants_name ON assistants (name)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_assistants_id ON assistants (id)"))
+        connection.execute(text("PRAGMA foreign_keys=ON"))
+
+
+_ensure_assistant_name_is_not_globally_unique()
+
 # Dependency (DB session)
 def get_db():
     db = SessionLocal()
@@ -53,6 +121,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
         new_user = models.User(
             email=user.email,
+            username=user.username.strip(),
             password=hashed_pwd
         )
 
@@ -60,7 +129,13 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_user)
 
-        return {"message": "User created successfully"}
+        return {
+            "message": "User created successfully",
+            "user": {
+                "email": new_user.email,
+                "username": new_user.username,
+            },
+        }
     except Exception as e:
         print(f"Error in register: {e}")
         raise
@@ -87,14 +162,28 @@ def login(
 
     token = create_access_token({"sub": db_user.email})
 
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "email": db_user.email,
+            "username": db_user.username,
+        },
+    }
 
 
 from auth import verify_token
 
 @app.get("/me")
-def get_current_user(current_user: str = Depends(verify_token)):
-    return {"message": f"Welcome {current_user}"}
+def get_current_user(current_user: str = Depends(verify_token), db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.email == current_user).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "email": db_user.email,
+        "username": db_user.username,
+        "message": f"Welcome {db_user.username or db_user.email}",
+    }
 
 from fastapi import UploadFile, File
 from auth import verify_token
@@ -159,6 +248,12 @@ def _assistant_slug(value: str):
     return normalized or "assistant"
 
 
+def _assistant_storage_id(current_user: str, assistant_name: str):
+    base_slug = _assistant_slug(assistant_name)
+    user_hash = hashlib.sha1(current_user.strip().lower().encode("utf-8")).hexdigest()[:8]
+    return f"{base_slug}-{user_hash}"
+
+
 def _assistant_by_slug(db: Session, assistant_id: str, current_user: str):
     assistant = (
         db.query(models.Assistant)
@@ -175,6 +270,7 @@ def _cleanup_orphan_chat_messages(db: Session):
     db.query(models.ChatMessage).filter(
         ~models.ChatMessage.assistant_id.in_(valid_assistant_ids)
     ).delete(synchronize_session=False)
+    db.commit()
 
 
 def _question_keywords(question: str):
@@ -235,7 +331,7 @@ def _build_source_payloads(files: list[UploadFile]):
     return source_payloads, temp_paths
 
 
-def _ingest_assistant_files(assistant_db_id: int, assistant_name: str, sources: list[dict]):
+def _ingest_assistant_files(assistant_db_id: int, assistant_storage_id: str, sources: list[dict]):
     db = SessionLocal()
     try:
         assistant_record = db.query(models.Assistant).filter(models.Assistant.id == assistant_db_id).first()
@@ -245,7 +341,7 @@ def _ingest_assistant_files(assistant_db_id: int, assistant_name: str, sources: 
         try:
             ingest_embedding_sources(
                 assistants_root=ASSISTANTS_ROOT,
-                assistant_name=assistant_name,
+                assistant_name=assistant_storage_id,
                 sources=sources,
                 replace_existing=False,
             )
@@ -314,11 +410,12 @@ def create_assistant(
 
     existing_record = (
         db.query(models.Assistant)
-        .filter(models.Assistant.name == cleaned_name)
+        .filter(models.Assistant.name == cleaned_name, models.Assistant.user_email == current_user)
         .first()
     )
-    if existing_record or assistant_exists(ASSISTANTS_ROOT, cleaned_name):
-        raise HTTPException(status_code=400, detail="Assistant name already exists. Please choose another name.")
+    assistant_storage_id = _assistant_storage_id(current_user, cleaned_name)
+    if existing_record or assistant_exists(ASSISTANTS_ROOT, assistant_storage_id):
+        raise HTTPException(status_code=400, detail="You already have an assistant with this name. Please choose another name.")
 
     if not files:
         raise HTTPException(status_code=400, detail="Upload at least one PDF or video file.")
@@ -326,7 +423,7 @@ def create_assistant(
     source_payloads, _ = _build_source_payloads(files)
 
     new_assistant = models.Assistant(
-        assistant_id=_assistant_slug(cleaned_name),
+        assistant_id=assistant_storage_id,
         name=cleaned_name,
         status="training",
         source_count=len(files),
@@ -338,7 +435,13 @@ def create_assistant(
     db.commit()
     db.refresh(new_assistant)
 
-    background_tasks.add_task(_ingest_assistant_files, new_assistant.id, cleaned_name, source_payloads)
+    # A brand-new assistant should always start with an empty thread.
+    # This protects against stale rows if an old SQLite id gets reused.
+    db.query(models.ChatMessage).filter(models.ChatMessage.assistant_id == new_assistant.id).delete(synchronize_session=False)
+    db.commit()
+    db.refresh(new_assistant)
+
+    background_tasks.add_task(_ingest_assistant_files, new_assistant.id, new_assistant.assistant_id, source_payloads)
 
     return {
         "message": "Assistant creation started",
@@ -369,7 +472,7 @@ def add_files_to_assistant(
     db.commit()
     db.refresh(assistant)
 
-    background_tasks.add_task(_ingest_assistant_files, assistant.id, assistant.name, source_payloads)
+    background_tasks.add_task(_ingest_assistant_files, assistant.id, assistant.assistant_id, source_payloads)
 
     return {
         "message": "Files uploaded. Embeddings are being merged into the assistant.",
@@ -387,7 +490,7 @@ def delete_assistant(
     serialized_assistant = _serialize_assistant(assistant)
 
     try:
-        delete_assistant_store(ASSISTANTS_ROOT, assistant.name)
+        delete_assistant_store(ASSISTANTS_ROOT, assistant.assistant_id)
     except FileNotFoundError:
         pass
     except Exception as exc:
@@ -422,7 +525,7 @@ def chat_with_assistant(
     try:
         matches = query_assistant_knowledge(
             assistants_root=ASSISTANTS_ROOT,
-            assistant_name=assistant.name,
+            assistant_name=assistant.assistant_id,
             question=question,
             top_k=max(1, min(payload.top_k, 8)),
         )

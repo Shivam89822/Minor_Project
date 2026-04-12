@@ -59,7 +59,7 @@ export default function HomePage() {
     setIsSubmitting(false)
   }
 
-  const handleAuthSubmit = async ({ email, password }) => {
+  const handleAuthSubmit = async ({ username, email, password }) => {
     setIsSubmitting(true)
     setErrorMessage('')
 
@@ -70,7 +70,7 @@ export default function HomePage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ username, email, password }),
         })
 
         const registerData = await registerResponse.json()
@@ -99,8 +99,10 @@ export default function HomePage() {
         throw new Error(loginData.detail || 'Unable to login')
       }
 
+      const resolvedUsername = loginData.user?.username || username || email.split('@')[0]
       localStorage.setItem('token', loginData.access_token)
-      localStorage.setItem('userEmail', email)
+      localStorage.setItem('userEmail', loginData.user?.email || email)
+      localStorage.setItem('userName', resolvedUsername)
       closeAuth()
       navigate('/dashboard')
     } catch (error) {

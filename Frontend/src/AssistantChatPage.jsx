@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 const API_BASE_URL = 'http://127.0.0.1:8000'
@@ -41,6 +41,10 @@ function formatCitation(match) {
     pieces.push(`${formatSeconds(start)} - ${formatSeconds(end)}`)
   }
   return pieces.join(' | ')
+}
+
+function ChatLoader() {
+  return <span className="chat-loader" aria-hidden="true" />
 }
 
 function UploadMoreModal({ isOpen, onClose, assistantId, onUploaded }) {
@@ -157,6 +161,7 @@ function AssistantChatPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [isUploadOpen, setIsUploadOpen] = useState(false)
+  const chatEndRef = useRef(null)
 
   const token = localStorage.getItem('token')
 
@@ -210,6 +215,31 @@ function AssistantChatPage() {
 
     return () => window.clearInterval(intervalId)
   }, [assistant?.status, loadAssistant])
+
+  useEffect(() => {
+    if (!chatEndRef.current) {
+      return
+    }
+
+    const scrollToLatestChat = () => {
+      chatEndRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+
+    const frameId = window.requestAnimationFrame(scrollToLatestChat)
+    const timeoutId = window.setTimeout(scrollToLatestChat, 120)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.clearTimeout(timeoutId)
+    }
+  }, [messages, isSending])
 
   const chatDisabledReason = useMemo(() => {
     if (!assistant) {
@@ -281,6 +311,19 @@ function AssistantChatPage() {
     } finally {
       setIsSending(false)
     }
+  }
+
+  const handleComposerKeyDown = (event) => {
+    if (event.key !== 'Enter' || event.shiftKey) {
+      return
+    }
+
+    event.preventDefault()
+    if (isSending || chatDisabledReason) {
+      return
+    }
+
+    handleSend(event)
   }
 
   return (
@@ -381,9 +424,20 @@ function AssistantChatPage() {
               </article>
             ))}
 
+            {isSending ? (
+              <article className="chat-message chat-message--assistant chat-message--pending" aria-live="polite">
+                <div className="chat-message__bubble chat-message__bubble--loading">
+                  <ChatLoader />
+                  <p>Searching your knowledge base...</p>
+                </div>
+              </article>
+            ) : null}
+
             {chatDisabledReason ? (
               <div className="chat-status-note">{chatDisabledReason}</div>
             ) : null}
+
+            <div ref={chatEndRef} className="chat-thread__end" aria-hidden="true" />
           </div>
 
           <aside className="chat-sidebar">
@@ -421,6 +475,7 @@ function AssistantChatPage() {
           <textarea
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
+            onKeyDown={handleComposerKeyDown}
             placeholder="Ask about your documents or videos..."
             rows={3}
             disabled={isSending || Boolean(chatDisabledReason)}
@@ -430,7 +485,7 @@ function AssistantChatPage() {
               Dashboard
             </Link>
             <button type="submit" className="dashboard-button dashboard-button--primary" disabled={isSending || Boolean(chatDisabledReason)}>
-              <ChatIcon type="send" />
+              {isSending ? <ChatLoader /> : <ChatIcon type="send" />}
               <span>{isSending ? 'Searching...' : 'Ask Assistant'}</span>
             </button>
           </div>

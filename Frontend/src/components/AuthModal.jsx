@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const initialFormState = {
+  username: '',
   email: '',
   password: '',
 }
@@ -77,6 +78,22 @@ function AuthModal({
         <p className="auth-modal__subtitle">{copy.subtitle}</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+          {mode === 'signup' ? (
+            <label className="auth-form__field">
+              <span>Username</span>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Choose a username"
+                autoComplete="username"
+                minLength={3}
+                required
+              />
+            </label>
+          ) : null}
+
           <label className="auth-form__field">
             <span>Email</span>
             <input

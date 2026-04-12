@@ -2,7 +2,15 @@ from pydantic import BaseModel, field_validator
 
 class UserCreate(BaseModel):
     email: str
+    username: str
     password: str
+
+    @field_validator("username")
+    def check_username(cls, value):
+        cleaned = value.strip()
+        if len(cleaned) < 3:
+            raise ValueError("Username must be at least 3 characters")
+        return cleaned
 
     @field_validator("password")
     def check_length(cls, value):
