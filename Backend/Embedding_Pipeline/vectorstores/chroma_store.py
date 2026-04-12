@@ -70,7 +70,7 @@ def store_in_chroma(chunks, collection_name, persist_directory=None):
         embeddings=embeddings.tolist(),
         metadatas=metadatas,
         ids=[
-            f"{chunk.get('id', 'chunk')}-{uuid.uuid4().hex}"
+            chunk.get("storage_id") or f"{chunk.get('id', 'chunk')}-{uuid.uuid4().hex}"
             for chunk in chunks
         ],
     )

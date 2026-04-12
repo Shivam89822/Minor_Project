@@ -1,0 +1,5 @@
+﻿Collecting bcrypt==3.2.2
+  Using cached bcrypt-3.2.2-cp36-abi3-win_amd64.whl.metadata (8.3 kB)
+Using cached bcrypt-3.2.2-cp36-abi3-win_amd64.whl (29 kB)
+Saved .\pip_test_download\bcrypt-3.2.2-cp36-abi3-win_amd64.whl
+Successfully downloaded bcrypt

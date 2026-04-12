@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,22 +43,26 @@ def get_db():
 
 @app.post("/register")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="User already exists")
-    
-    hashed_pwd = hash_password(user.password)
+    try:
+        existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="User already exists")
+        
+        hashed_pwd = hash_password(user.password)
 
-    new_user = models.User(
-        email=user.email,
-        password=hashed_pwd
-    )
+        new_user = models.User(
+            email=user.email,
+            password=hashed_pwd
+        )
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
 
-    return {"message": "User created successfully"}
+        return {"message": "User created successfully"}
+    except Exception as e:
+        print(f"Error in register: {e}")
+        raise
 
 from sqlalchemy.orm import Session
 
@@ -118,6 +122,7 @@ import models
 from auth import verify_token
 from ingestion.service import ingest_sources as ingest_embedding_sources
 from ingestion.service import query_assistant_knowledge
+from utils.gemini_grounding import OUT_OF_CONTEXT_REPLY, generate_grounded_answer
 # from pipelines.videos.pipeline import process_video
 # from pipelines.pdf.pipeline import process_pdf
 
@@ -428,11 +433,31 @@ def chat_with_assistant(
         )
         response_parts.append(f"{index}. {snippet}\nSource: {citation}")
 
+    generated_answer_result = (
+        {
+            "answer": OUT_OF_CONTEXT_REPLY,
+            "used": True,
+            "reason": "no_formatted_matches",
+        }
+        if not formatted_matches
+        else generate_grounded_answer(question, matches)
+    )
+    fallback_answer = (
+        "\n\n".join(response_parts)
+        if response_parts
+        else "No relevant context was found in this assistant's knowledge base."
+    )
+    final_answer = (generated_answer_result or {}).get("answer") or fallback_answer
+
     return {
         "assistant": _serialize_assistant(assistant),
         "question": question,
-        "answer": "\n\n".join(response_parts) if response_parts else "No relevant context was found in this assistant's knowledge base.",
+        "answer": final_answer,
         "matches": formatted_matches,
+        "answer_source": "gemini" if (generated_answer_result or {}).get("used") and final_answer != fallback_answer else "fallback",
+        "gemini_used": bool((generated_answer_result or {}).get("used")),
+        "gemini_reason": (generated_answer_result or {}).get("reason"),
+        "gemini_model": (generated_answer_result or {}).get("model"),
     }
 
 

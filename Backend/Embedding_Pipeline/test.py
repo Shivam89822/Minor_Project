@@ -6,6 +6,15 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
+print("=" * 60)
+print(f"Running with Python: {sys.executable}")
+try:
+    import numpy
+    print(f"NumPy Version: {numpy.__version__}")
+except ImportError:
+    print("NumPy is NOT installed in this environment.")
+print("=" * 60)
+
 from assistants.store import ensure_assistant, get_assistant_store, list_assistants
 from ingestion.service import ingest_sources as ingest_assistant_sources
 from ingestion.service import query_assistant_knowledge

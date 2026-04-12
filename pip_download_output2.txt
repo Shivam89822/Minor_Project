@@ -1,0 +1,5 @@
+﻿Collecting bcrypt==5.0.0
+  Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl.metadata (10 kB)
+Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl (150 kB)
+Saved .\pip_test_download\bcrypt-5.0.0-cp39-abi3-win_amd64.whl
+Successfully downloaded bcrypt

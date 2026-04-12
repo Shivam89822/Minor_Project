@@ -1,0 +1,47 @@
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+ npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+venv/
+.venv/
+.env
+.env.*
+pyvenv.cfg
+pip-wheel-metadata/
+.pytest_cache/
+
+# Database
+*.sqlite3
+*.db
+test.db
+
+# IDE / Editor
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment / system files
+*.log
+*.tmp
+*.temp
+
+# Optional local folders
+Backend/Server/uploads/

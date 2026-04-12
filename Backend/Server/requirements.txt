@@ -2,12 +2,13 @@ fastapi
 uvicorn
 sqlalchemy
 pydantic
+numpy<2.2
 python-jose
 passlib[bcrypt]
-bcrypt<4
+bcrypt>=4.0.1,<6
 python-multipart
 cloudinary
-chromadb
+chromadb>=1.5.7,<2
 sentence-transformers
 PyMuPDF
 python-docx

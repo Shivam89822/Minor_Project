@@ -17,7 +17,8 @@ def extract_transcript_from_video(file_path, model_name="tiny", language=None):
         import whisper
     except ImportError as exc:
         raise ImportError(
-            "The 'whisper' package is required for video transcription."
+            "Video transcription dependencies are not ready. "
+            f"Whisper import failed with: {exc}"
         ) from exc
 
     model = whisper.load_model(model_name)
