@@ -157,7 +157,9 @@ def generate_grounded_answer(question, matches):
         "Ignore OCR noise, repeated fragments, broken formatting, and obviously corrupted text. "
         "Do not invent facts or add unsupported information. "
         "Always answer in complete sentences. Never return sentence fragments. "
-        "If the question asks for an explanation, definition, or comparison, provide a detailed, easy-to-understand response."
+        "Prefer a detailed and easy-to-understand explanation when the context supports it. "
+        "When appropriate, begin with a direct answer and then elaborate with supporting details, explanation, distinctions, and examples drawn only from the provided context. "
+        "If the user asks a definitional, conceptual, explanatory, or comparison question, answer in a moderately detailed way rather than a one-line summary."
     )
 
     user_prompt = (
@@ -168,7 +170,9 @@ def generate_grounded_answer(question, matches):
         "Do not include timestamps or metadata in the answer. "
         "Use only the necessary context details; omit irrelevant or redundant fragments. "
         "If the retrieved response is unrelated to the question, reply exactly: Out of context. "
-        "Make the answer complete, clear, and well-structured."
+        "Make the answer complete, clear, and well-structured. "
+        "Prefer 2 to 4 coherent paragraphs when enough context is available. "
+        "If useful, explain the idea first and then elaborate on important details or differences."
     )
 
     try:
@@ -189,9 +193,9 @@ def generate_grounded_answer(question, matches):
                 "Do not copy the context verbatim. Synthesize and polish it into a clear, professional final answer. "
                 "Select only the necessary details and omit irrelevant fragments or timestamps. "
                 "Do not invent facts or add unsupported information. Ignore OCR noise and broken fragments. "
-                "Answer in 2 paragraphs. "
+                "Answer in 2 to 4 paragraphs. "
                 "Paragraph 1: direct definition or core answer. "
-                "Paragraph 2: explanation, difference, significance, or example supported by the context."
+                "Remaining paragraphs: explanation, distinction, significance, example, or key supporting details from the context."
             )
             structured_user_prompt = (
                 f"Question:\n{question}\n\n"
@@ -202,6 +206,7 @@ def generate_grounded_answer(question, matches):
                 "Use only the necessary context details; omit irrelevant or redundant fragments.\n"
                 "If this is a theory, definition, or comparison question, explain it clearly and thoroughly.\n"
                 "Do not give a one-line summary.\n"
+                "Prefer a fuller explanation with clear elaboration when the context supports it.\n"
                 "If unrelated or unsupported, reply exactly: Out of context."
             )
             answer_text = _call_gemini(
