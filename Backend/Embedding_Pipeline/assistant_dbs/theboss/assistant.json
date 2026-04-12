@@ -1,0 +1,7 @@
+{
+  "assistant_id": "theboss",
+  "assistant_name": "Theboss",
+  "persist_directory": "C:\\Users\\admin\\AppData\\Local\\Temp\\minor_project_assistant_dbs\\theboss",
+  "collection_name": "knowledge_base",
+  "sparse_index_path": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\theboss\\sparse_index.json"
+}

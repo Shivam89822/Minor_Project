@@ -1137,7 +1137,7 @@
   },
   "records": [
     {
-      "id": "tmpzog2_0sp_chunk_1-ab1523e271264a8da63c6ccb372c513c",
+      "id": "tmp0sf5ik96_chunk_1-3666efddf6d3487f939506b75b34bb79",
       "text": "Books 1) The Complete Reference, Java 2 - Herbert Schild -TMH 2) Object Oriented Modeling and Design with UML - Michael Blaha and James Rambaugh - Pearson UML 3 Introduction to OOAD Object oriented analysis and design is a software engineering approach which models the system as interacting objects. Each object represents a system entity which plays a vital role in building of that system. Object Oriented Analysis (OOA) focuses on analysis of functional requirements for the system. Object Oriented Design (OOD) takes analysis model as input and produces implementation specification. Implementation Specification Functional Requirements Object Oriented Analysis Model Object Oriented Design Model UML 4 Modeling There are three important type of UML models: 1.Class Model 2.State Model 3.Interaction Model UML 5 Modeling 1) Class model The class model describes the structure of the object, the relationship of one object with other objects, attributes and operations of the object.",
       "metadata": {
         "source": "sample.pdf",
@@ -1226,7 +1226,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_2-0a1b045740b049a0a01eafc852760e44",
+      "id": "tmp0sf5ik96_chunk_2-4452f6b1226d4b75ad6e8660a3d8fb09",
       "text": "There are three important type of UML models: 1.Class Model 2.State Model 3.Interaction Model UML 5 Modeling 1) Class model The class model describes the structure of the object, the relationship of one object with other objects, attributes and operations of the object. The state and interaction models use the context of the class model. The goal of the class model is to capture the concepts from the real worlds that are useful for your application The class model is represented by the class diagrams. The classes in this diagrams define the attributes and operations of each object. UML 6 Modeling 2) State model The state model is concerned with the time and sequencing of the operations of the object. On occurrence of the events the object change their state. The state Model captures the control aspect of the system.",
       "metadata": {
         "source": "sample.pdf",
@@ -1303,7 +1303,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_3-45b4f9ee5b2444c781ae8d272b49a01d",
+      "id": "tmp0sf5ik96_chunk_3-d4967fe6c6884ba6a8102410ce518ae7",
       "text": "Modeling 2) State model The state model is concerned with the time and sequencing of the operations of the object. On occurrence of the events the object change their state. The state Model captures the control aspect of the system. The state model is represented by State diagram. Each state diagram represents state and the event sequences. UML 7 Modeling 3) Interaction Model Interaction model describes how one object collaborates with other in order to achieve behaviour of the system The overall behaviour of the system can be represented with the help of state and interaction model. The interaction model includes use case diagrams, sequence diagrams and Activity diagrams. The use case diagrams show how to outsider actor interacts with the system to achieve functionality. The sequence Diagram represents the objects that interact and the time sequence of their interaction The activity Diagram represents flow of control among objects.",
       "metadata": {
         "source": "sample.pdf",
@@ -1381,7 +1381,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_4-e04a7d8fad9e48f9b3c86a1bccd1ec0c",
+      "id": "tmp0sf5ik96_chunk_4-3d9bad70e9644cb69bd2e161b047e8e9",
       "text": "The use case diagrams show how to outsider actor interacts with the system to achieve functionality. The sequence Diagram represents the objects that interact and the time sequence of their interaction The activity Diagram represents flow of control among objects. UML 8 CLASS MODELING UML 9 Introduction to class modeling A class model captures the static structure of a system by characterizing the objects in the system, the relationships between the objects and the attributes and operations for each class of objects. Class model provides a graphical representation of a system and are used for communicating with customers. UML 10 Class and Object Concept Classes Class is a group of objects having same attributes and operations, relationships and semantics. The classes appear as common nouns or noun phrases.",
       "metadata": {
         "source": "sample.pdf",
@@ -1467,7 +1467,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_5-041c1da6246e4776b4d25c8788031341",
+      "id": "tmp0sf5ik96_chunk_5-641c9a58f9994068940d5ac5386b83fd",
       "text": "Class model provides a graphical representation of a system and are used for communicating with customers. UML 10 Class and Object Concept Classes Class is a group of objects having same attributes and operations, relationships and semantics. The classes appear as common nouns or noun phrases. Objects in a class share a common semantic purpose. For Example both the dog and cat have the properties like tail and legs and they belong to same class Animal. Grouping the objects into corresponding classes make the design Abstract. Objects The main purpose of class model is to describe objects. Object is an instance of a class. The objects can be conceptual entities, real world entities, or important things from implementation point of view. The objects are normally nouns. The choice of objects is done by judgements.",
       "metadata": {
         "source": "sample.pdf",
@@ -1564,7 +1564,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_6-076f5da8779142fdb759320b010515bc",
+      "id": "tmp0sf5ik96_chunk_6-b89235fb4f814b97ae2320bea5963729",
       "text": "The main purpose of class model is to describe objects. Object is an instance of a class. The objects can be conceptual entities, real world entities, or important things from implementation point of view. The objects are normally nouns. The choice of objects is done by judgements. For Example: If a student is a class then Anuja, pooja and Kajal are the objects of the class students. Each student has its own name, roll no, and address. UML 11 Class Diagrams The class Model is represented by two types of diagrams:- 1) Class Diagrams Class diagrams provide a graphic notation for modeling classes and their relationships thereby describing possible objects. Useful for abstract modeling and designing actual programs. They are concise ,easy to understand 2) Object Diagrams Object diagrams shows individual objects and their relationship . A class diagram corresponds to an infinite set of object diagrams. UML 12",
       "metadata": {
         "source": "sample.pdf",
@@ -1665,7 +1665,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_7-8480333317624b0b8e668c9401d9b99f",
+      "id": "tmp0sf5ik96_chunk_7-fc5fb1d5363c4ef48eb5b18b27aeb290",
       "text": "thereby describing possible objects. Useful for abstract modeling and designing actual programs. They are concise ,easy to understand 2) Object Diagrams Object diagrams shows individual objects and their relationship . A class diagram corresponds to an infinite set of object diagrams. UML 12 Continue . #Notation used for class & object diagram: For class diagram:- Person For object diagram:- Smith:Person Mary:Person UML 13 Values and Attributes A value is a piece of data. An attribute is a named property of a class that describes a value held by each object of the class. E.g. Name,birthdate and weight are attributes of Person class. - Color,modelyear and weight are att. Of Car class. Each attribute name is unique within a class. So Person and Car class have attribute called weight. UML 14 Values and Attributes continue . # Example:- List att. In the second compartment of the class box. Person Class Name",
       "metadata": {
         "source": "sample.pdf",
@@ -1756,7 +1756,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_8-158a0a35799b45e0aadec5a89e7e0dfe",
+      "id": "tmp0sf5ik96_chunk_8-75b056e8024f47c6af1cc5f4e48a6c74",
       "text": "- Color,modelyear and weight are att. Of Car class. Each attribute name is unique within a class. So Person and Car class have attribute called weight. UML 14 Values and Attributes continue . # Example:- List att. In the second compartment of the class box. Person Class Name name: string b date:date Attributes Smith:Person Mary:Person name: \"Joe Smith b date:21/10/1983 name: Mary Sharp b date:16/03/1953 UML 15 Operations and Methods Objects have procedures or functions which are called as operations. All the objects in the same class share the common set of operations. For Example- The class Shape can have various objects such as rectangle, triangle or square having common operations such as move, draw, print. A method is the implementation of an operation for a class. When an operation has methods on several classes it is important that the methods all have the same Signature.",
       "metadata": {
         "source": "sample.pdf",
@@ -1855,7 +1855,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_9-6e2b770868264351ad6c0509d3e97f95",
+      "id": "tmp0sf5ik96_chunk_9-4f9f7b2275784be0b4ec67fb4403f7f1",
       "text": "triangle or square having common operations such as move, draw, print. A method is the implementation of an operation for a class. When an operation has methods on several classes it is important that the methods all have the same Signature. Signature means the number and types of arguments and type of return value. e.g. print should not have fileName as an argument for one method filePointer for another. UML 16 Operations and Methods continue Feature is a generic word for either an attribute or operation. UML notation is to list operations in the third compartment of the class box. #Examples:- Person File GeometricObject name: string fileName sizeInBytes color position b date:date lastUpdate changeJob changeAddress move(delta : Vector) select(p:Point):Boolean rotate(in angle:float=0.0 print UML 17 Summary of Notation for classes The attribute and operation compartments are optional. A missing attribute / operation compartment means that attributes / operations are unspecified.",
       "metadata": {
         "source": "sample.pdf",
@@ -1964,7 +1964,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_10-43d29feb95a3409d82772f6ac5894020",
+      "id": "tmp0sf5ik96_chunk_10-17910e4bfad34561ae091af30bb39798",
       "text": "color position b date:date lastUpdate changeJob changeAddress move(delta : Vector) select(p:Point):Boolean rotate(in angle:float=0.0 print UML 17 Summary of Notation for classes The attribute and operation compartments are optional. A missing attribute / operation compartment means that attributes / operations are unspecified. An empty compartment means attributes/operations are specified and that are none. ClassName attName1:dataType1=defaultValue1 attName1:dataType1=defaultValue1 . . . operationName1(argList1) : resultType1 operationName2(argList2) : resultType2 . . . UML 18 Link and Association A link is a physical or conceptual connection among objects. Most link relate two objects but some links relate three or more objects. e.g. Smith works for simplex company. A link is an instant of an association. An Association is a description of a group of links with common structure and common semantics. UML 19 Link and Association continue An association connects related classes and it is also denoted by a line. (with multiple line segments)",
       "metadata": {
         "source": "sample.pdf",
@@ -2073,7 +2073,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_11-098c5b11e887482298c3bf86c8a9265a",
+      "id": "tmp0sf5ik96_chunk_11-fa07d19503e342b7a99be3c098b2cb98",
       "text": "A link is an instant of an association. An Association is a description of a group of links with common structure and common semantics. UML 19 Link and Association continue An association connects related classes and it is also denoted by a line. (with multiple line segments) It is good to arrange the classes in an association from left to right ,if possible. The associations and links often appears as verbs in problem statements. UML 20 Link and Association continue WorksFor Class diagram Company Person For example, a person name * * name John:Person name= john GE:Company Name= GE Mary:Person name= Mary IBM:Company Sue:Person Name= Sue Object diagram Name= IBM Jeff:Person Name= jeff UML 21 Multiplicity Multiplicity specifies the number of instances of one class that may relate to a single instance of an associated class. UML diagrams explicitly list multiplicity at the end of the association lines. Multiplicity Indicators",
       "metadata": {
         "source": "sample.pdf",
@@ -2169,7 +2169,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_12-2504b90954f3402b88d225716e304632",
+      "id": "tmp0sf5ik96_chunk_12-b9ac86db76b241378c389b2ec87bd21a",
       "text": "Jeff:Person Name= jeff UML 21 Multiplicity Multiplicity specifies the number of instances of one class that may relate to a single instance of an associated class. UML diagrams explicitly list multiplicity at the end of the association lines. Multiplicity Indicators Exactly one 1 Zero or more (unlimited) * (0..*) One or more 1..* Zero or one (both inclusive) 0..1 Specified range 2..4 Multiple, disjoint ranges 2, 4..6, 8 UML 22 Multiplicity Continue Class diagram HasCapital CapitalCity Country 1 name 1 name HasCapital Ottawa:CapitalCity Canada:Country Name= Ottawa Name= Canada HasCapital Paris:CapitalCity France:Country Name= Paris Name= France Object diagram UML 23 Association End Names If we consider one to many association then it has two ends-an end with a multiplicity of one and an end with a multiplicity of many . We can also give the name to both the ends. Association end names often appear as nouns in problem descriptions. Example",
       "metadata": {
         "source": "sample.pdf",
@@ -2262,7 +2262,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_13-09a0ee18380b49c39c89950f9060f826",
+      "id": "tmp0sf5ik96_chunk_13-0b6e87564f084c06b2b6b75aeac264d9",
       "text": "If we consider one to many association then it has two ends-an end with a multiplicity of one and an end with a multiplicity of many . We can also give the name to both the ends. Association end names often appear as nouns in problem descriptions. Example Person Company WorksFor employee employer * 0..1 UML 24 Association End Names Continue Association end names are necessary for associations between two objects of the same class. For example container and contents distinguish the two usage of Directory class. 0..1 container 1 * owner User Directory * * * contents authorizedUser UML 25 Association End Names Continue Association end names let you unify multiple references to the same class. When constructing class diagram you have to use proper association end names not introduce separate class for each reference as shown in below fig. parent Parent Child 2 * Person 0..2 * child",
       "metadata": {
         "source": "sample.pdf",
@@ -2358,7 +2358,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_14-297c4b92bdaa4b9299c6e2df8e616449",
+      "id": "tmp0sf5ik96_chunk_14-a51c52f933ac4d02b6bfef02ca539562",
       "text": "Association end names let you unify multiple references to the same class. When constructing class diagram you have to use proper association end names not introduce separate class for each reference as shown in below fig. parent Parent Child 2 * Person 0..2 * child Wrong model Correct model UML 26 Ordering Often the objects on a many association end have no explicit order and we regard them as a set. Sometimes the objects have an explicit order. {ordered} Browser WebPages 1 * Displays The Web Browser displays the web pages in some specific order (FCFS).Hence {ordered} keyword is used at the association end. UML 27 Association Classes The abstract class is a class that allows the association to be a class itself. When two classes are related with each other by an association link, then the association itself can have attributes and operations",
       "metadata": {
         "source": "sample.pdf",
@@ -2459,7 +2459,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_15-3bd16e2cb4ca47038ba6bcbae57d1779",
+      "id": "tmp0sf5ik96_chunk_15-012c9d8c3d024d0284ea209b12c421fa",
       "text": "UML 27 Association Classes The abstract class is a class that allows the association to be a class itself. When two classes are related with each other by an association link, then the association itself can have attributes and operations Hence, association can be represented by a class. The UML notation for an association class is a box attached to the association by a dashed line. /etc/abc.txt read John * * File User AccessibleBy UML 28 accessPermission Qualified Associations A qualified association is an association in which an attribute called the qualifier disambiguates the objects for a many association end. possible to define for one-to-many and many-to-many asso. A qualifier selects among the target objects, reducing multiplicity from many to one . Example:- A bank services multiple accounts. UML 29 Qualified Associations Continue Bank Bank a/cNo. 1 1 Qualifier 0..1 * Account Account a/cNo. Qualified Not qualified UML 30",
       "metadata": {
         "source": "sample.pdf",
@@ -2555,7 +2555,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_16-2225ed4315c944a786854db1daefeba1",
+      "id": "tmp0sf5ik96_chunk_16-0bab2ea31eb24b538070c65133864de6",
       "text": "A qualifier selects among the target objects, reducing multiplicity from many to one . Example:- A bank services multiple accounts. UML 29 Qualified Associations Continue Bank Bank a/cNo. 1 1 Qualifier 0..1 * Account Account a/cNo. Qualified Not qualified UML 30 Generalization and Inheritance Generalization is the relationship between a class (super class) and one or more variations of the class (subclasses). Super Class (Base class) Super Class Provides common functionality and data members Subclass (Derived class) Inherits public and protected members from the super class Can extend or change behavior of super class by overriding methods Subclass Overriding UML 31 Subclass may override the behavior of its super class Generalization and Inheritance Continue A large hollow arrowhead denotes generalization. UML 32 Generalization advantages Polymorphism Find common characteristics among classes Define hierarchies Reuse of the code UML 33 ADVANCED CLASS MODELING UML 34 Enumerations (enum)",
       "metadata": {
         "source": "sample.pdf",
@@ -2653,7 +2653,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_17-8a445b42fe6449f1a6cfb6c821d8f4d6",
+      "id": "tmp0sf5ik96_chunk_17-3fed4b1d38b54bc984ed4dc12144d830",
       "text": "Subclass may override the behavior of its super class Generalization and Inheritance Continue A large hollow arrowhead denotes generalization. UML 32 Generalization advantages Polymorphism Find common characteristics among classes Define hierarchies Reuse of the code UML 33 ADVANCED CLASS MODELING UML 34 Enumerations (enum) In Java, an enumeration is a way to have a type that has a defined number of possible values. Example country code is represented as an enum. This had the possible values UK, US, ES, FR. In UML, we would write it as a class with two compartments. We would add the stereotype <<enumeration>> to the name; you might also see this as <<enum>>. The attributes compartment would list the possible values. UML 35 Accessibility Operators The class diagram will specify the accessibility for attributes and operations. The most common operators are: + public # protected - private ~package UML 36 n-Ary Association",
       "metadata": {
         "source": "sample.pdf",
@@ -2765,7 +2765,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_18-9a838da6e53a4ddb8ae7446d6046eeae",
+      "id": "tmp0sf5ik96_chunk_18-2e58aa61232e4d3cad2cf1845a3ef5ef",
       "text": "stereotype <<enumeration>> to the name; you might also see this as <<enum>>. The attributes compartment would list the possible values. UML 35 Accessibility Operators The class diagram will specify the accessibility for attributes and operations. The most common operators are: + public # protected - private ~package UML 36 n-Ary Association An n-Ary Association element is used to model complex relationships between three or more classes. It is not a commonly-employed device, but can be used to good effect where there is a dependant relationship between several classes. Any n-Ary association may be drawn as a diamond with a solid line for each association end connecting the diamond to the classifier that is the end s type. UML 37 Aggregation Aggregation is a part of association It is used to represent whole-part relationship. It is normally posses has-a relationship",
       "metadata": {
         "source": "sample.pdf",
@@ -2870,7 +2870,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_19-be3e32ae4bc64d70b61acb3e0f847741",
+      "id": "tmp0sf5ik96_chunk_19-efac81f2fe7e47f988e94c2e78330419",
       "text": "Any n-Ary association may be drawn as a diamond with a solid line for each association end connecting the diamond to the classifier that is the end s type. UML 37 Aggregation Aggregation is a part of association It is used to represent whole-part relationship. It is normally posses has-a relationship If two objects are tightly bound by a part-whole relationship, it is an aggregation. If two objects are usually considered as independent, even though they may often be linked, it is an association. Aggregation is drawn like association, except a small diamond indicates the assembly end. Car DVD Player Car Here, DVD player and car are the two classes that can be associated by aggregate relationship. Here, Car can exists without DVD player and DVD player can be exists without car. UML 38 Aggregation Example: A LawnMower consists of one blade,one engine,many wheels and one deck. UML 39",
       "metadata": {
         "source": "sample.pdf",
@@ -2964,7 +2964,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_20-da8302710fa74a7a8f590a8f2424ec98",
+      "id": "tmp0sf5ik96_chunk_20-6310fa2182c542be87433f59af47446b",
       "text": "Here, DVD player and car are the two classes that can be associated by aggregate relationship. Here, Car can exists without DVD player and DVD player can be exists without car. UML 38 Aggregation Example: A LawnMower consists of one blade,one engine,many wheels and one deck. UML 39 Aggregation Vs. Composition The UML has two forms of part-whole relationships: a general form called aggregation and a more restrictive form called composition. Composition is a form of aggregation with two additional constraints. (1) A constituent part can belong to at most one assembly. (2) Once a constituent part has been assigned an assembly, it has a coincident lifetime with the assembly. Thus composition implies ownership of the parts by the whole. UML 40 Aggregation Vs. Composition Continue The notation for composition is a small solid diamond next to the assembly class.",
       "metadata": {
         "source": "sample.pdf",
@@ -3055,7 +3055,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_21-2fac78ed969f4cf9beac8fd73c4aadbd",
+      "id": "tmp0sf5ik96_chunk_21-bea2dd489a49486085bb29e03e5fc051",
       "text": "(2) Once a constituent part has been assigned an assembly, it has a coincident lifetime with the assembly. Thus composition implies ownership of the parts by the whole. UML 40 Aggregation Vs. Composition Continue The notation for composition is a small solid diamond next to the assembly class. In below fig. a company consists of divisions, which in turn consist of departments. Means company is indirectly a composition of departments. UML 41 Summary of Aggregation Vs. Composition Aggregation Composition Part can be shared by several wholes Part is always a part of a single whole category document * Window Frame * Parts can live independently (i.e., whole cardinality can be 0..*) Parts exist only as part of the whole. When the wall is destroyed, they are destroyed Whole is not solely responsible for the object Whole is responsible and should create/destroy the objects UML 42 Abstract Classes",
       "metadata": {
         "source": "sample.pdf",
@@ -3155,7 +3155,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_22-26bbe8d8dea6412f8372185d8259f82b",
+      "id": "tmp0sf5ik96_chunk_22-e3e047d426f24e88bbc8efd750f55272",
       "text": "Parts can live independently (i.e., whole cardinality can be 0..*) Parts exist only as part of the whole. When the wall is destroyed, they are destroyed Whole is not solely responsible for the object Whole is responsible and should create/destroy the objects UML 42 Abstract Classes An abstract class is a class that has no direct instances but whose descendant classes have direct instances. A concrete class is a class that is instantiable that means it can have direct instances. Only concrete classes may be leaf classes in an inheritance tree. In UML notation an abstract class name is listed in an italic font or by placing the keyword {abstract} below or after the name. Example: UML 43 Class A { int main() { int a; public: A *pA; B oB; pA = &oB; pA show(); return 0; } A() {",
       "metadata": {
         "source": "sample.pdf",
@@ -3245,7 +3245,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_23-6f70eb32c74d4812b2d0c9c4da0de6fe",
+      "id": "tmp0sf5ik96_chunk_23-8165e05eaf6d476db9c1e1ac6a9e061d",
       "text": "In UML notation an abstract class name is listed in an italic font or by placing the keyword {abstract} below or after the name. Example: UML 43 Class A { int main() { int a; public: A *pA; B oB; pA = &oB; pA show(); return 0; } A() { a = 1; } virtual void show() { cout <<a; } }; Class B: public A { O/P: 2 int b; public: B() { b = 2; } virtual void show() { cout <<b; } }; UML 44 Metadata Metadata is data that describe other data.For example, a class definition is metadata and models are also metadata. Many real world applications have metadata,such as catalogs,dictionary etc. Following fig. shows an example of metadata. UML 45 Constraints A constraint is a Boolean condition involving model elements such as objects, classes, attributes, links, associations and generalization sets.",
       "metadata": {
         "source": "sample.pdf",
@@ -3333,7 +3333,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_24-12d8f00368d842649794286778514181",
+      "id": "tmp0sf5ik96_chunk_24-bcb5d4be0082432f979a5181f92959fa",
       "text": "and models are also metadata. Many real world applications have metadata,such as catalogs,dictionary etc. Following fig. shows an example of metadata. UML 45 Constraints A constraint is a Boolean condition involving model elements such as objects, classes, attributes, links, associations and generalization sets. A constraint restricts the values that elements can assume. We can define constraints on following: - On objects - On links UML has two notations for constraints. - braces { } - dog-eared comment box constraint UML 46 Constraints on objects Following fig. shows several examples of constraints. First fig. shows a constraint between two things at the same time. Second fig. shows a constraints between attributes of the single object. Third fig. shows constraint on the same object over time. UML 47 Constraints on Links example UML 48 Constraints on Generalization Disjoint Each object belongs to exactly one of the subclasses Overlapping",
       "metadata": {
         "source": "sample.pdf",
@@ -3430,7 +3430,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_25-a31c98fb1e0b403695e6ccac7be95ba4",
+      "id": "tmp0sf5ik96_chunk_25-5f128b465b8c48058253a648c23b6c13",
       "text": "Second fig. shows a constraints between attributes of the single object. Third fig. shows constraint on the same object over time. UML 47 Constraints on Links example UML 48 Constraints on Generalization Disjoint Each object belongs to exactly one of the subclasses Overlapping An object may belong to more than one subclass Complete The generalization lists all the possible subclasses Incomplete The generalization may be missing some subclasses Example Prepare a class model to describe geographical map. Map contains roads, rivers and mountains. All components are described by points representing longitude and latitude. UML 51 Solution UML 52 Example Prepare a class model for the hotel management system. The system should supports chain of hotels. A hotel contains two categories of rooms: executive and normal, both AC and non-AC. The customers of executive rooms can avail extra facilities like games, swimming, food service in rooms, etc.",
       "metadata": {
         "source": "sample.pdf",
@@ -3541,7 +3541,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_26-8329dbd3844c44a4a940bb23f6c74bd2",
+      "id": "tmp0sf5ik96_chunk_26-68aabfc461df499a978b5283ae769ae0",
       "text": "Prepare a class model for the hotel management system. The system should supports chain of hotels. A hotel contains two categories of rooms: executive and normal, both AC and non-AC. The customers of executive rooms can avail extra facilities like games, swimming, food service in rooms, etc. The booking is possible by internet or by phone. If the booking is through phone, process is done by receptionist, and if booking is done through internet the process is carried out by customer through hotel website. Depending on the number of days customer stays, appropriate bill is generated. The bill also contains amount for transport, food and other facilities enjoyed by the customer along with necessary taxes. The manager should be able to generate reports like list of customers staying in the hotel, list of rooms empty, monthly/yearly income, UML 53 etc. Solution UML 54 Example",
       "metadata": {
         "source": "sample.pdf",
@@ -3643,7 +3643,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_27-76333f08205541cd8399668038acf34b",
+      "id": "tmp0sf5ik96_chunk_27-e8de7f151e8d4a5e94cdafeb466b2623",
       "text": "contains amount for transport, food and other facilities enjoyed by the customer along with necessary taxes. The manager should be able to generate reports like list of customers staying in the hotel, list of rooms empty, monthly/yearly income, UML 53 etc. Solution UML 54 Example Prepare a class diagram for each group of classes. Add at least 10 relationships (associations and generalizations) to each diagram. File system, file, ASCII file, binary file, directory file, disc, drive, track, sector UML 55 UML 56 A sample class diagram: Attendance Management System UML 57 State Modeling UML 58 Introduction We can understand the system by first examining its static structure (class model). Then we should examine changes to the objects and their relationship over time and it is given by state model. The state model describes the sequences of operations that occur in response to external stimuli.",
       "metadata": {
         "source": "sample.pdf",
@@ -3761,7 +3761,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_28-dade84f95400420f99f50b497f101fa6",
+      "id": "tmp0sf5ik96_chunk_28-c99c9b62bc6c48db986523b084a980bb",
       "text": "We can understand the system by first examining its static structure (class model). Then we should examine changes to the objects and their relationship over time and it is given by state model. The state model describes the sequences of operations that occur in response to external stimuli. The state model consists of multiple state diagrams, one for each class with temporal behavior that is important to an application. UML 59 Events An Event is an occurrence at a point in time, such as user depresses left button of the mouse or flight 123 departs from Chicago. Events often correspond to verbs in the past tense like - power turned on - alarm set By definition an event happens instantaneously with regard to the time scale of an application. UML 60 Events continue Events include error conditions as well as normal occurrences. For example - motor jammed - transaction aborted",
       "metadata": {
         "source": "sample.pdf",
@@ -3877,7 +3877,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_29-62f78ec9474440f8b9f550a5a3aa8bd2",
+      "id": "tmp0sf5ik96_chunk_29-4a722ef8b8e647518c138de1a8666acd",
       "text": "- power turned on - alarm set By definition an event happens instantaneously with regard to the time scale of an application. UML 60 Events continue Events include error conditions as well as normal occurrences. For example - motor jammed - transaction aborted - timeout There are several kinds of events but following are most common events. - signal event - change event - time event UML 61 Signal Event A signal is an explicit one-way transmission of information from one object to another. If object want to reply then use the separate signal. A signal event is the event of sending or receiving a signal. We are more concern about the receipt of a signal because it causes effects in the receiving object. The UML notation is the keyword signal in guillemets(<<>>) above the signal class name in the top section of a box. UML 62 Signal Event Continue",
       "metadata": {
         "source": "sample.pdf",
@@ -3980,7 +3980,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_30-40422afd63a64099a1042eb291a4f2c8",
+      "id": "tmp0sf5ik96_chunk_30-cbd24904a1bf475094373fc688634b7c",
       "text": "We are more concern about the receipt of a signal because it causes effects in the receiving object. The UML notation is the keyword signal in guillemets(<<>>) above the signal class name in the top section of a box. UML 62 Signal Event Continue For example, UAflight 123 departs from chicago on January 10,1991 is an instance of signal class FlightDeparture. UML 63 Change Event A change event is an event that is caused by the satisfaction of a boolean expression. The intent of a change event is that the expression is continually tested whenever the expression changes from false to true, the event happens. The UML notation for a change event is the keyword when followed by a parenthesized boolean expression. Examples: When (room_temp<heating_set_pt) When (bat_power < lower_limit) UML 64 When (tire_pressure < min.pressure) Time Event",
       "metadata": {
         "source": "sample.pdf",
@@ -4076,7 +4076,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_31-b51cd8244d0048dba9ff22baae505f7a",
+      "id": "tmp0sf5ik96_chunk_31-26097ac8bf044bb9b06cce6fbea5f4de",
       "text": "whenever the expression changes from false to true, the event happens. The UML notation for a change event is the keyword when followed by a parenthesized boolean expression. Examples: When (room_temp<heating_set_pt) When (bat_power < lower_limit) UML 64 When (tire_pressure < min.pressure) Time Event A time event is an event caused by the occurrence of an absolute time or the elapse of a time interval. The UML notation for an absolute time is the keyword when followed by a parenthesized expression involving time. The notation for a time interval is the keyword after followed by a parenthesized expression that evaluates to a time duration. Examples: When (date=Jan 1,2000) After (10 seconds) UML 65 States A state is an abstraction of the values and links of an object. States often correspond to verbs with a suffix of ing (Waiting, Dialing) or the duration of some condition (Powered, BelowFreezing).",
       "metadata": {
         "source": "sample.pdf",
@@ -4167,7 +4167,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_32-6f678016ec3e428f96747132376436f2",
+      "id": "tmp0sf5ik96_chunk_32-ed3c38f9f9404d8fae9af69e45db4aee",
       "text": "When (date=Jan 1,2000) After (10 seconds) UML 65 States A state is an abstraction of the values and links of an object. States often correspond to verbs with a suffix of ing (Waiting, Dialing) or the duration of some condition (Powered, BelowFreezing). UML notation for a state is a rounded box containing an optional state name. examples: Waiting Dialing Powered BelowFreezing UML 66 States Continue Each object can only be in one state at a time. Objects may parade through one or more states during their lifetime. At a given moment of time, the various objects for a class can exist in a multitude of states. A state specifies the response of an object to input events. The response may include the invocation of behavior or a change of state. For example: if a digit is dialed in state Dial tone, the phone line drops the",
       "metadata": {
         "source": "sample.pdf",
@@ -4268,7 +4268,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_33-20cdec0659a74007981ccb2a45d0d34d",
+      "id": "tmp0sf5ik96_chunk_33-9e685547fdac4bf4a1ff5312a4f14325",
       "text": "A state specifies the response of an object to input events. The response may include the invocation of behavior or a change of state. For example: if a digit is dialed in state Dial tone, the phone line drops the dial tone and enters state Dialing. UML 67 State A state is when a system is: Doing something e.g., heating oven, mixing ingredients, accelerating engine, Waiting for something to happen Waiting for user to enter password, waiting for sensor reading. UML 68 Basic UML Syntax A state is drawn with a round box, with three compartments for sometimes left out when empty Name state variables actions name state variables (if any) actions to be performed 5/11/2018 69 Transitions and conditions A transition is an instantaneous change from one state to another. For example, when a called phone is answered, the phone line transition",
       "metadata": {
         "source": "sample.pdf",
@@ -4366,7 +4366,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_34-a6ccf8c5235c4196b46c3761a4a97816",
+      "id": "tmp0sf5ik96_chunk_34-4b9d9a641cc24194b3a618f1e1b7c95c",
       "text": "Name state variables actions name state variables (if any) actions to be performed 5/11/2018 69 Transitions and conditions A transition is an instantaneous change from one state to another. For example, when a called phone is answered, the phone line transition from the Ringing state to the Connected state. The transition is said to fire upon the change from the source state to the target state. The choice of the next state depends on both the original state and the event received. An event may cause multiple objects to transition from a conceptual point of view such transition occur concurrently. UML 70 Transition A directed relationship between two states. Contains parts",
       "metadata": {
         "source": "sample.pdf",
@@ -4449,7 +4449,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_35-49813e29f5df4a99ace6e7bdcdbd8e47",
+      "id": "tmp0sf5ik96_chunk_35-50b04508100049ed88bd18c51b4a2f91",
       "text": "The choice of the next state depends on both the original state and the event received. An event may cause multiple objects to transition from a conceptual point of view such transition occur concurrently. UML 70 Transition A directed relationship between two states. Contains parts Source state - current state before transition fires. Event trigger - external stimulus that has the potential to cause a transition to fire. Guard condition - a condition that must be satisfied before a transition can fire. Target state - new state after transition fires. UML 71 Guard Condition A guard condition is a Boolean expression that must be true in order for a transition to occur. A guarded transition fires when its event occurs, but only if the guard condition is true. For example when you go out in the morning (event), if the temperature is",
       "metadata": {
         "source": "sample.pdf",
@@ -4542,7 +4542,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_36-e518c79453524aa2aca8442c81962444",
+      "id": "tmp0sf5ik96_chunk_36-036ce11d2d234479b8f73b9a2c0ad3a6",
       "text": "A guard condition is a Boolean expression that must be true in order for a transition to occur. A guarded transition fires when its event occurs, but only if the guard condition is true. For example when you go out in the morning (event), if the temperature is below freezing (condition), then put on your gloves (next state). A guard condition is checked only once, at the time the occurs and transition fires only if the guard condition is true. A guard condition is checked only once while a change event is in effect UML 72 checked continuously. Guard Condition Continue The UML notation for a transition is a line from origin state to target state. An arrowhead points to the target state. The line may consist of several line segments. An event may label the transition and be followed by an optional guard condition in square brackets.",
       "metadata": {
         "source": "sample.pdf",
@@ -4630,7 +4630,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_37-2936edbd185d4d129a36454704c2c55b",
+      "id": "tmp0sf5ik96_chunk_37-9dc0f63c7637418180d0fb9cddbf7323",
       "text": "The UML notation for a transition is a line from origin state to target state. An arrowhead points to the target state. The line may consist of several line segments. An event may label the transition and be followed by an optional guard condition in square brackets. We italicize the event name and show the condition in normal font. UML 73 Guard Condition Continue Following fig. shows guarded transitions for traffic lights at an intersection. UML 74 event action Idle Active off hook / play dial tone [ valid subscriber ] on hook guard condition UML 75 State Diagram Behavior Do -Activities A do-activity is an activity that continues for extended time. It can only occur within a state and can not be attached to a transition. For example the warning light may flash during the paper jam state for a copy machine.",
       "metadata": {
         "source": "sample.pdf",
@@ -4734,7 +4734,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_38-f52f47a7bd2b488d9aa7f811186dc76c",
+      "id": "tmp0sf5ik96_chunk_38-0eb2115278ad4ff599d4520258356d25",
       "text": "A do-activity is an activity that continues for extended time. It can only occur within a state and can not be attached to a transition. For example the warning light may flash during the paper jam state for a copy machine. Do-activities include continuous operations such as displaying a picture on a television screen as well as sequential operations that terminate by themselves after an interval of time. UML 76 Do Activities Continue The notation do / denotes a do-activity that may be performed for all or part of the duration that an object is in a state. A do-activity may be interrupted by an event that is received during its execution. Paper jam Do / flash warning light UML 77 State Diagram of Telephone System UML 78 State Diagram of Elevator UML 79 INTERACTION MODELING UML 80 Introduction",
       "metadata": {
         "source": "sample.pdf",
@@ -4830,7 +4830,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_39-8906b05f18d94cf4a599d7885f7ad316",
+      "id": "tmp0sf5ik96_chunk_39-a161eb1c35f843b88ef0f3a97defa6c2",
       "text": "A do-activity may be interrupted by an event that is received during its execution. Paper jam Do / flash warning light UML 77 State Diagram of Telephone System UML 78 State Diagram of Elevator UML 79 INTERACTION MODELING UML 80 Introduction The interaction model is the third leg of the modeling tripod and describes interactions within a system. The class model describes the objects in a system and their relationships. The interaction model describes how the objects interact. In this chapter we will discuss following diagrams: 1)Use Case diagram 2) Sequence diagram 3)Activity diagram Use Case Models Use cases describe how a system interacts with outside actors. Each use case represents a piece of functionality that a system provides to its users. Actors: An actor is a direct external user of a system. An object or set of objects that communicates directly with the",
       "metadata": {
         "source": "sample.pdf",
@@ -4929,7 +4929,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_40-b73133ef4878499aab186154a8e2ed96",
+      "id": "tmp0sf5ik96_chunk_40-68025bc203884e218bee0333cfdccca7",
       "text": "Use cases describe how a system interacts with outside actors. Each use case represents a piece of functionality that a system provides to its users. Actors: An actor is a direct external user of a system. An object or set of objects that communicates directly with the system but that is not part of the system. Each actor represents those objects that behave in a particular way toward the system. Use Case Models Continue An actor is directly connected to the system and the object indirectly connected to the system is not called an actor. In use case diagram actor is represented by following symbol. Actor name Use Cases A use case is a coherent piece of functionality that a system can provide by interacting with actors. For example a customer actor can buy a beverage from a vending machine. Following are the use cases for the vending machine.",
       "metadata": {
         "source": "sample.pdf",
@@ -5013,7 +5013,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_41-e54b5a025ff842009d14513f516542a4",
+      "id": "tmp0sf5ik96_chunk_41-818c1231bfd74c4daead4bdd9329cd93",
       "text": "A use case is a coherent piece of functionality that a system can provide by interacting with actors. For example a customer actor can buy a beverage from a vending machine. Following are the use cases for the vending machine. - Buy a beverage - Perform scheduled maintenance - Make repairs - Load items Use Cases Each use case involves one or more actors as well as the system itself. The use case buy a beverage involves the customer actor and the use case perform scheduled maintenance involves the repair technician actor. In a telephone system the use case make a call involves two actors a caller and a receiver. The actors need not all be persons. Include Relationship The include relationship could be used: to simplify large use case by splitting it into several use cases, to extract common parts of the behaviours of two or more use cases.",
       "metadata": {
         "source": "sample.pdf",
@@ -5102,7 +5102,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_42-1fd89ec71496427caeb2596540bd691f",
+      "id": "tmp0sf5ik96_chunk_42-77c6d20652304a97bda5c96dd373622a",
       "text": "The actors need not all be persons. Include Relationship The include relationship could be used: to simplify large use case by splitting it into several use cases, to extract common parts of the behaviours of two or more use cases. A large use case could have some behaviours which might be detached into distinct smaller use cases to be included back into the base use case using the UML include relationship. The purpose of this action is modularization of behaviours, making them more manageable. Extend Relationship Extend is a directed relationship that specifies how and when the behaviour defined in usually supplementary (optional) extending use case can be inserted into the behaviour defined in the extended use case. Extend relationship is shown as a dashed line with an open arrowhead directed from the extending use case to the extended (base) use case. The arrow is labelled with",
       "metadata": {
         "source": "sample.pdf",
@@ -5197,7 +5197,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_43-9322f1202551474fa497eaa8f7dc11a2",
+      "id": "tmp0sf5ik96_chunk_43-f0ddf8a7bb384d849dfcc441bd99a524",
       "text": "in usually supplementary (optional) extending use case can be inserted into the behaviour defined in the extended use case. Extend relationship is shown as a dashed line with an open arrowhead directed from the extending use case to the extended (base) use case. The arrow is labelled with the keyword extend . UML 87 Example Guidelines for Use case models First determine the system boundary Ensure that actors are focused -Each actor should have a single purpose. If multiple purposes show them with separate actors. Relate use cases and actors Attendance Management System UML 91 Sequence Models A Sequence diagram is an interaction diagram that shows how processes operate with one another and in what order. A sequence diagram shows object interactions arranged in time sequence. Key parts of a sequence diag. 1) participant: an object or entity that acts in the sequence diagram",
       "metadata": {
         "source": "sample.pdf",
@@ -5303,7 +5303,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_44-d5c51297815b49a1ad20b3e52c4af363",
+      "id": "tmp0sf5ik96_chunk_44-4d445fc8a0f548719040248ec8cbebda",
       "text": "A Sequence diagram is an interaction diagram that shows how processes operate with one another and in what order. A sequence diagram shows object interactions arranged in time sequence. Key parts of a sequence diag. 1) participant: an object or entity that acts in the sequence diagram sequence diagram starts with an unattached \"found message\" arrow Key parts of a sequence diag 2) message: communication between participant objects the axes in a sequence diagram: horizontal: which object/participant is acting vertical: time (down -> forward in time) message (method call) indicated by horizontal arrow to other object write message name and arguments above arrow UML 93 Key parts of a sequence diag 3) Focus of control (execution occurrence): An execution occurrence (shown as tall, thin rectangle on a lifeline) represents the period during which an element is performing an operation.",
       "metadata": {
         "source": "sample.pdf",
@@ -5394,7 +5394,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_45-3a7ef125c37b446ab4c04224888bb2cb",
+      "id": "tmp0sf5ik96_chunk_45-c89341772a274982bd5dcf2cfae536fd",
       "text": "write message name and arguments above arrow UML 93 Key parts of a sequence diag 3) Focus of control (execution occurrence): An execution occurrence (shown as tall, thin rectangle on a lifeline) represents the period during which an element is performing an operation. The top and the bottom of the of the rectangle are aligned with the initiation and the completion time respectively. Key parts of a sequence diag. 4) Lifeline: squares with object type, optionally preceded by object name and colon write object's name if it clarifies the diagram object's \"life line\" represented by dashed vert. line Lifetime of objects creation: arrow with 'new' written above it notice that an object created after the start of the scenario appears lower than the others deletion: an X at bottom of object's lifeline Scenarios for AMS Each scenario has a sequence of steps. Scenario 1 : Log in Scenarios for AMS",
       "metadata": {
         "source": "sample.pdf",
@@ -5496,7 +5496,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_46-a96f86ad6c5e4e569990624197dd4191",
+      "id": "tmp0sf5ik96_chunk_46-5050cd2fec1b4263beaa44ec4b9cc4c6",
       "text": "notice that an object created after the start of the scenario appears lower than the others deletion: an X at bottom of object's lifeline Scenarios for AMS Each scenario has a sequence of steps. Scenario 1 : Log in Scenarios for AMS Scenario 2 : Update Student or faculty profile. Scenarios for AMS Scenario 3 : Update Attendance Guidelines for Sequence Models Prepare at least one scenario per use case: Abstract the scenarios into sequence diagrams: The seq. diagram clearly show the contribution of each actor. Divide complex interaction: Prepare a sequence diagram for each error condition. Activity Diagrams Useful to specify software or hardware system behaviour Based on data flow models a graphical representation (with a Directed Graph) of how data move around an information system Activities An activity is the specification of parameterized behaviour as the coordinated sequencing of subordinate units whose individual elements are actions",
       "metadata": {
         "source": "sample.pdf",
@@ -5603,7 +5603,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_47-c6806b4eecaf4c9eb23fa68ddab2c3c1",
+      "id": "tmp0sf5ik96_chunk_47-82beb58773784777b53d128d4338068b",
       "text": "Based on data flow models a graphical representation (with a Directed Graph) of how data move around an information system Activities An activity is the specification of parameterized behaviour as the coordinated sequencing of subordinate units whose individual elements are actions Uses parameters to receive and provide data to the invoker Activity nodes Activity Paramet er name Output paramete er name Paramet edges Input paramete Paramet r er name r Activity nodes Three type of activity nodes: Action nodes: executable activity nodes; the execution of an action represents some transformations or processes in the modeled system (already seen) Control nodes: coordinate flows in an activity diagram between other nodes Forking and Joining Use a synchronization bar to specify the forking and joining of parallel flows of control A synchronization bar is rendered as a thick horizontal or vertical line.",
       "metadata": {
         "source": "sample.pdf",
@@ -5701,7 +5701,7 @@
       }
     },
     {
-      "id": "tmpzog2_0sp_chunk_48-cc42b79fa4dc4d82958a391ba34e6676",
+      "id": "tmp0sf5ik96_chunk_48-b1fab933e6b84297bb57c3f7f7738e40",
       "text": "Control nodes: coordinate flows in an activity diagram between other nodes Forking and Joining Use a synchronization bar to specify the forking and joining of parallel flows of control A synchronization bar is rendered as a thick horizontal or vertical line. Fork-A fork may have one incoming transitions and two or more outgoing transitions each transition represents an independent flow of control conceptually, the activities of each of outgoing transitions are concurrent either truly concurrent (multiple nodes) or sequential yet interleaved (one node) Forking and Joining(Cont d) A join may have two or more incoming transitions and one outgoing transition above the join, the activities associated with each of these paths continues in parallel at the join, the concurrent flows synchronize Each waits until all incoming flows have reached the join, at which point one flow of control continues on below the join Activity Diagram of Attendance Management System",
       "metadata": {
         "source": "sample.pdf",

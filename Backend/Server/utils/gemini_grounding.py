@@ -148,25 +148,27 @@ def generate_grounded_answer(question, matches):
     model_name = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip() or DEFAULT_GEMINI_MODEL
 
     system_instruction = (
-        "You are a grounded academic answering assistant. "
-        "Answer only from the provided context. "
+        "You are an expert assistant. "
+        "The provided context is the retrieved raw response from the assistant's knowledge base. "
+        "Use it only as the source for your answer. "
         f"If the context does not contain the answer, reply exactly: {OUT_OF_CONTEXT_REPLY} "
-        "Rewrite the answer in clear, natural, human-readable language. "
+        "Do not copy the context verbatim. Instead, synthesize and polish it into a longer, clear, fully formed final answer. "
+        "Select only the necessary details from the retrieved response and omit irrelevant fragments or timestamps. "
         "Ignore OCR noise, repeated fragments, broken formatting, and obviously corrupted text. "
-        "Do not invent facts. Do not mention that you were given context. "
+        "Do not invent facts or add unsupported information. "
         "Always answer in complete sentences. Never return sentence fragments. "
-        "For explanation, theory, or definition questions, give a fuller answer in 5 to 8 sentences when the context supports it. "
-        "If the context contains a definition, give the definition first, then elaborate with the key idea, difference, significance, or example if available. "
-        "When two related concepts are asked together, explain both and highlight the difference clearly."
+        "If the question asks for an explanation, definition, or comparison, provide a detailed, easy-to-understand response."
     )
 
     user_prompt = (
         f"Question:\n{question}\n\n"
-        f"Context:\n{context}\n\n"
-        "Write a clean answer from the context only. "
-        "Return a complete answer, not copied raw text. "
-        "If the answer is definitional, explain it in simple language. "
-        "Elaborate enough that a student can understand it without seeing the raw source text."
+        f"Retrieved response:\n{context}\n\n"
+        "Using only the retrieved response, provide a polished and organized final answer for the user. "
+        "Do not copy raw text from the retrieved response. "
+        "Do not include timestamps or metadata in the answer. "
+        "Use only the necessary context details; omit irrelevant or redundant fragments. "
+        "If the retrieved response is unrelated to the question, reply exactly: Out of context. "
+        "Make the answer complete, clear, and well-structured."
     )
 
     try:
@@ -175,35 +177,39 @@ def generate_grounded_answer(question, matches):
             model_name=model_name,
             system_instruction=system_instruction,
             user_prompt=user_prompt,
-            max_output_tokens=420,
+            max_output_tokens=1000,
         )
 
         if _should_expand_answer(question) and _is_too_short(answer_text) and answer_text != OUT_OF_CONTEXT_REPLY:
             structured_system_instruction = (
-                "You are a grounded academic answering assistant. "
-                "Use only the provided context. "
+                "You are an expert assistant. "
+                "The provided context is the retrieved raw response from the assistant's knowledge base. "
+                "Use it only as the source for your answer. "
                 f"If the context does not contain enough information, reply exactly: {OUT_OF_CONTEXT_REPLY} "
-                "Do not invent facts. Ignore OCR noise and broken fragments. "
-                "Answer in 2 short paragraphs. "
+                "Do not copy the context verbatim. Synthesize and polish it into a clear, professional final answer. "
+                "Select only the necessary details and omit irrelevant fragments or timestamps. "
+                "Do not invent facts or add unsupported information. Ignore OCR noise and broken fragments. "
+                "Answer in 2 paragraphs. "
                 "Paragraph 1: direct definition or core answer. "
-                "Paragraph 2: explanation, difference, significance, or example supported by the context. "
-                "Never answer in a single line for concept or explanation questions."
+                "Paragraph 2: explanation, difference, significance, or example supported by the context."
             )
             structured_user_prompt = (
                 f"Question:\n{question}\n\n"
-                f"Context:\n{context}\n\n"
+                f"Retrieved response:\n{context}\n\n"
                 "Task:\n"
-                "Write a detailed student-friendly answer.\n"
-                "If this is a theory, definition, or comparison question, elaborate properly.\n"
+                "Provide a polished, detailed final answer using only the retrieved response.\n"
+                "Do not include timestamps or metadata in the answer.\n"
+                "Use only the necessary context details; omit irrelevant or redundant fragments.\n"
+                "If this is a theory, definition, or comparison question, explain it clearly and thoroughly.\n"
                 "Do not give a one-line summary.\n"
-                f"If unsupported, return exactly: {OUT_OF_CONTEXT_REPLY}"
+                "If unrelated or unsupported, reply exactly: Out of context."
             )
             answer_text = _call_gemini(
                 api_key=api_key,
                 model_name=model_name,
                 system_instruction=structured_system_instruction,
                 user_prompt=structured_user_prompt,
-                max_output_tokens=520,
+                max_output_tokens=1000,
             )
     except (HTTPError, URLError, TimeoutError, ValueError, json.JSONDecodeError) as exc:
         return {

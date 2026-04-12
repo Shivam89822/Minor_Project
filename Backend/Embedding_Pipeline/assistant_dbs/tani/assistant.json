@@ -1,7 +1,0 @@
-{
-  "assistant_id": "tani",
-  "assistant_name": "tani",
-  "persist_directory": "C:\\Users\\admin\\AppData\\Local\\Temp\\minor_project_assistant_dbs\\tani",
-  "collection_name": "knowledge_base",
-  "sparse_index_path": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\tani\\sparse_index.json"
-}

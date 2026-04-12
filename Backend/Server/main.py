@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import sys
@@ -129,6 +130,16 @@ from utils.gemini_grounding import OUT_OF_CONTEXT_REPLY, generate_grounded_answe
 ASSISTANTS_ROOT = os.path.join(EMBEDDING_PIPELINE_DIR, "assistant_dbs")
 
 
+def _serialize_chat_message(message: models.ChatMessage):
+    return {
+        "id": message.id,
+        "role": message.role,
+        "text": message.text,
+        "matches": json.loads(message.matches_json) if message.matches_json else [],
+        "created_at": message.created_at.isoformat() if message.created_at else None,
+    }
+
+
 def _serialize_assistant(assistant: models.Assistant):
     return {
         "id": assistant.id,
@@ -157,6 +168,13 @@ def _assistant_by_slug(db: Session, assistant_id: str, current_user: str):
     if not assistant:
         raise HTTPException(status_code=404, detail="Assistant not found")
     return assistant
+
+
+def _cleanup_orphan_chat_messages(db: Session):
+    valid_assistant_ids = db.query(models.Assistant.id).subquery()
+    db.query(models.ChatMessage).filter(
+        ~models.ChatMessage.assistant_id.in_(valid_assistant_ids)
+    ).delete(synchronize_session=False)
 
 
 def _question_keywords(question: str):
@@ -269,7 +287,17 @@ def get_user_assistant(
     db: Session = Depends(get_db),
 ):
     assistant = _assistant_by_slug(db, assistant_id, current_user)
-    return {"assistant": _serialize_assistant(assistant)}
+    _cleanup_orphan_chat_messages(db)
+    messages = (
+        db.query(models.ChatMessage)
+        .filter(models.ChatMessage.assistant_id == assistant.id)
+        .order_by(models.ChatMessage.created_at)
+        .all()
+    )
+    return {
+        "assistant": _serialize_assistant(assistant),
+        "messages": [_serialize_chat_message(message) for message in messages],
+    }
 
 
 @app.post("/assistants")
@@ -365,6 +393,7 @@ def delete_assistant(
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Unable to delete assistant embeddings: {exc}") from exc
 
+    db.query(models.ChatMessage).filter(models.ChatMessage.assistant_id == assistant.id).delete(synchronize_session=False)
     db.delete(assistant)
     db.commit()
 
@@ -442,12 +471,32 @@ def chat_with_assistant(
         if not formatted_matches
         else generate_grounded_answer(question, matches)
     )
-    fallback_answer = (
-        "\n\n".join(response_parts)
-        if response_parts
-        else "No relevant context was found in this assistant's knowledge base."
-    )
+    if formatted_matches:
+        paragraph = ". ".join([item["text"] for item in formatted_matches]) + "."
+        sources = "\n\nSources:\n" + "\n".join([f"{i+1}. {item['citation']}" for i, item in enumerate(formatted_matches, 1)])
+        fallback_answer = paragraph + sources
+    else:
+        fallback_answer = "No relevant context was found in this assistant's knowledge base."
     final_answer = (generated_answer_result or {}).get("answer") or fallback_answer
+
+    user_message = models.ChatMessage(
+        assistant_id=assistant.id,
+        role="user",
+        text=question,
+        matches_json=None,
+        created_at=datetime.utcnow(),
+    )
+
+    assistant_message = models.ChatMessage(
+        assistant_id=assistant.id,
+        role="assistant",
+        text=final_answer,
+        matches_json=json.dumps(formatted_matches),
+        created_at=datetime.utcnow(),
+    )
+
+    db.add_all([user_message, assistant_message])
+    db.commit()
 
     return {
         "assistant": _serialize_assistant(assistant),

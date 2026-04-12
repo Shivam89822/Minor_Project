@@ -184,6 +184,7 @@ function AssistantChatPage() {
       }
 
       setAssistant(data.assistant)
+      setMessages(data.messages || [])
       setErrorMessage('')
     } catch (error) {
       setErrorMessage(error.message || 'Unable to load assistant.')
