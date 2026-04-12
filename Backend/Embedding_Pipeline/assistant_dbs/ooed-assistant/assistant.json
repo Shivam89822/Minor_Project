@@ -1,6 +1,0 @@
-{
-  "assistant_id": "ooed-assistant",
-  "assistant_name": "OOED_Assistant",
-  "persist_directory": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\ooed-assistant",
-  "collection_name": "knowledge_base"
-}

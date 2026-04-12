@@ -103,7 +103,7 @@ EMBEDDING_PIPELINE_DIR = os.path.join(BACKEND_DIR, "Embedding_Pipeline")
 if EMBEDDING_PIPELINE_DIR not in sys.path:
     sys.path.insert(0, EMBEDDING_PIPELINE_DIR)
 
-from assistants.store import assistant_exists
+from assistants.store import assistant_exists, delete_assistant as delete_assistant_store
 
 import cloudinary.uploader
 from cloudinary_config import *
@@ -152,6 +152,45 @@ def _assistant_by_slug(db: Session, assistant_id: str, current_user: str):
     if not assistant:
         raise HTTPException(status_code=404, detail="Assistant not found")
     return assistant
+
+
+def _question_keywords(question: str):
+    return {
+        word
+        for word in re.findall(r"[a-zA-Z0-9]+", question.lower())
+        if len(word) > 2
+    }
+
+
+def _build_relevant_snippet(question: str, text: str, max_sentences: int = 2, max_chars: int = 320):
+    cleaned_text = " ".join((text or "").split()).strip()
+    if not cleaned_text:
+        return ""
+
+    sentences = re.split(r"(?<=[.!?])\s+", cleaned_text)
+    sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+    if not sentences:
+        return cleaned_text[:max_chars].rstrip() + ("..." if len(cleaned_text) > max_chars else "")
+
+    keywords = _question_keywords(question)
+    ranked_sentences = []
+
+    for index, sentence in enumerate(sentences):
+        sentence_terms = set(re.findall(r"[a-zA-Z0-9]+", sentence.lower()))
+        overlap = len(keywords & sentence_terms)
+        ranked_sentences.append((overlap, -index, sentence))
+
+    ranked_sentences.sort(reverse=True)
+    selected = [sentence for _, _, sentence in ranked_sentences[:max_sentences] if sentence]
+
+    if not any(score > 0 for score, _, _ in ranked_sentences[:max_sentences]):
+        selected = sentences[:max_sentences]
+
+    snippet = " ".join(selected).strip()
+    if len(snippet) > max_chars:
+        snippet = snippet[: max_chars - 3].rstrip() + "..."
+
+    return snippet
 
 
 def _build_source_payloads(files: list[UploadFile]):
@@ -305,6 +344,31 @@ def add_files_to_assistant(
     }
 
 
+@app.delete("/assistants/{assistant_id}")
+def delete_assistant(
+    assistant_id: str,
+    current_user: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
+    assistant = _assistant_by_slug(db, assistant_id, current_user)
+    serialized_assistant = _serialize_assistant(assistant)
+
+    try:
+        delete_assistant_store(ASSISTANTS_ROOT, assistant.name)
+    except FileNotFoundError:
+        pass
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Unable to delete assistant embeddings: {exc}") from exc
+
+    db.delete(assistant)
+    db.commit()
+
+    return {
+        "message": "Assistant deleted successfully.",
+        "assistant": serialized_assistant,
+    }
+
+
 @app.post("/assistants/{assistant_id}/chat")
 def chat_with_assistant(
     assistant_id: str,
@@ -349,7 +413,7 @@ def chat_with_assistant(
             citation_parts.append(f"to {int(end // 60):02d}:{int(end % 60):02d}")
 
         citation = " | ".join(citation_parts)
-        snippet = match.get("text", "").strip()
+        snippet = _build_relevant_snippet(question, match.get("text", ""))
         formatted_matches.append(
             {
                 "id": match.get("id"),

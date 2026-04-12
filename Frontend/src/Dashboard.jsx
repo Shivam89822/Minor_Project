@@ -43,6 +43,7 @@ function DashboardIcon({ type }) {
     bell: <path d="M9 17h6M10 17a2 2 0 0 0 4 0m-6-2h8l-1-2v-2.5a3 3 0 1 0-6 0V13Z" />,
     search: <path d="m16 16 3 3M9.5 17a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />,
     clock: <path d="M12 7.5v4l2.5 1.5M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />,
+    trash: <path d="M8 7h8m-7 0 .5 10.5A1.5 1.5 0 0 0 11 19h2a1.5 1.5 0 0 0 1.5-1.5L15 7M10 7V5.8A1.8 1.8 0 0 1 11.8 4h.4A1.8 1.8 0 0 1 14 5.8V7m-7 0h10" />,
   }
 
   return (
@@ -206,12 +207,63 @@ function CreateAssistantModal({
   )
 }
 
+function DeleteAssistantModal({
+  assistant,
+  isDeleting,
+  onCancel,
+  onConfirm,
+}) {
+  if (!assistant) {
+    return null
+  }
+
+  return (
+    <div className="auth-modal-overlay" onClick={onCancel} role="presentation">
+      <section
+        className="auth-modal dashboard-delete-modal"
+        onClick={(event) => event.stopPropagation()}
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="delete-assistant-title"
+      >
+        <button
+          type="button"
+          className="auth-modal__close"
+          onClick={onCancel}
+          aria-label="Close"
+          disabled={isDeleting}
+        >
+          x
+        </button>
+
+        <div className="auth-modal__glow" aria-hidden="true" />
+        <span className="auth-modal__badge auth-modal__badge--danger">Delete assistant</span>
+        <h2 id="delete-assistant-title">Remove {assistant.name}?</h2>
+        <p className="auth-modal__subtitle">
+          This will delete the assistant card and permanently remove all embeddings related to it.
+        </p>
+
+        <div className="dashboard-delete-modal__actions">
+          <button type="button" className="dashboard-delete-modal__cancel" onClick={onCancel} disabled={isDeleting}>
+            Cancel
+          </button>
+          <button type="button" className="dashboard-delete-modal__confirm" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete Assistant'}
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function Dashboard() {
   const navigate = useNavigate()
   const [assistants, setAssistants] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [dashboardError, setDashboardError] = useState('')
+  const [deletingAssistantId, setDeletingAssistantId] = useState(null)
+  const [assistantPendingDelete, setAssistantPendingDelete] = useState(null)
 
   const token = localStorage.getItem('token')
 
@@ -295,6 +347,46 @@ function Dashboard() {
     setAssistants((current) => [assistant, ...current])
   }
 
+  const requestAssistantDelete = (assistant) => {
+    setAssistantPendingDelete(assistant)
+  }
+
+  const handleAssistantDelete = async () => {
+    const assistant = assistantPendingDelete
+    if (!assistant) {
+      return
+    }
+
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setDashboardError('Missing login token. Please login again.')
+      return
+    }
+
+    try {
+      setDeletingAssistantId(assistant.id)
+      const response = await fetch(`${API_BASE_URL}/assistants/${assistant.assistant_id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || 'Unable to delete assistant.')
+      }
+
+      setAssistants((current) => current.filter((item) => item.id !== assistant.id))
+      setDashboardError('')
+      setAssistantPendingDelete(null)
+    } catch (error) {
+      setDashboardError(error.message || 'Unable to delete assistant.')
+    } finally {
+      setDeletingAssistantId(null)
+    }
+  }
+
   const renderAssistantBody = () => {
     if (isLoading) {
       return <div className="dashboard-empty-state">Loading assistants...</div>
@@ -328,6 +420,17 @@ function Dashboard() {
       <div className="assistant-grid">
         {assistants.map((assistant) => (
           <article key={assistant.id} className="assistant-card">
+            <button
+              type="button"
+              className="assistant-card__delete"
+              aria-label={`Delete ${assistant.name}`}
+              title="Delete assistant"
+              onClick={() => requestAssistantDelete(assistant)}
+              disabled={deletingAssistantId === assistant.id}
+            >
+              <DashboardIcon type="trash" />
+            </button>
+
             <div className="assistant-card__icon">
               <DashboardIcon type="assistant" />
             </div>
@@ -365,9 +468,10 @@ function Dashboard() {
                 type="button"
                 className="assistant-card__chat"
                 onClick={() => navigate(`/assistants/${assistant.assistant_id}`)}
+                disabled={deletingAssistantId === assistant.id}
               >
                 <DashboardIcon type="chat" />
-                Open Chat
+                {deletingAssistantId === assistant.id ? 'Deleting...' : 'Open Chat'}
               </button>
             </div>
           </article>
@@ -525,6 +629,16 @@ function Dashboard() {
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onCreated={handleAssistantCreated}
+      />
+      <DeleteAssistantModal
+        assistant={assistantPendingDelete}
+        isDeleting={deletingAssistantId === assistantPendingDelete?.id}
+        onCancel={() => {
+          if (!deletingAssistantId) {
+            setAssistantPendingDelete(null)
+          }
+        }}
+        onConfirm={handleAssistantDelete}
       />
     </main>
   )

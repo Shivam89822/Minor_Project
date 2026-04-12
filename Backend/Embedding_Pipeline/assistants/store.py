@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import shutil
 import tempfile
 
 
@@ -75,3 +76,18 @@ def list_assistants(root_directory):
             assistants.append(json.load(handle))
 
     return assistants
+
+
+def delete_assistant(root_directory, assistant_name):
+    assistant = get_assistant_store(root_directory, assistant_name)
+    assistant_id = assistant["assistant_id"]
+    assistant_directory = os.path.join(root_directory, assistant_id)
+    persist_directory = assistant.get("persist_directory")
+
+    if persist_directory and os.path.isdir(persist_directory):
+        shutil.rmtree(persist_directory, ignore_errors=True)
+
+    if os.path.isdir(assistant_directory) and os.path.abspath(assistant_directory) != os.path.abspath(persist_directory or ""):
+        shutil.rmtree(assistant_directory, ignore_errors=True)
+
+    return assistant

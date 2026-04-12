@@ -1,6 +1,0 @@
-{
-  "assistant_id": "new-model",
-  "assistant_name": "New_Model",
-  "persist_directory": "D:\\Minor_Project\\Backend\\Embedding_Pipeline\\assistant_dbs\\new-model",
-  "collection_name": "knowledge_base"
-}

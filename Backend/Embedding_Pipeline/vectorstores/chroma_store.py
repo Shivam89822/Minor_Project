@@ -1,6 +1,26 @@
 import uuid
 
 
+def _sanitize_metadata_value(value):
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    if value is None:
+        return None
+    return str(value)
+
+
+def _sanitize_metadata(metadata):
+    sanitized = {}
+
+    for key, value in (metadata or {}).items():
+        normalized_value = _sanitize_metadata_value(value)
+        if normalized_value is None:
+            continue
+        sanitized[key] = normalized_value
+
+    return sanitized
+
+
 def _get_client(persist_directory=None):
     try:
         import chromadb
@@ -43,11 +63,12 @@ def store_in_chroma(chunks, collection_name, persist_directory=None):
 
     documents = [chunk["text"] for chunk in chunks]
     embeddings = embed_texts(documents)
+    metadatas = [_sanitize_metadata(chunk.get("metadata")) for chunk in chunks]
 
     collection.add(
         documents=documents,
         embeddings=embeddings.tolist(),
-        metadatas=[chunk["metadata"] for chunk in chunks],
+        metadatas=metadatas,
         ids=[
             f"{chunk.get('id', 'chunk')}-{uuid.uuid4().hex}"
             for chunk in chunks

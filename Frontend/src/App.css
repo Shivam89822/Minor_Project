@@ -471,6 +471,11 @@ body {
   letter-spacing: 0.03em;
 }
 
+.auth-modal__badge--danger {
+  background: rgba(123, 36, 69, 0.28);
+  color: #ff9abe;
+}
+
 .auth-modal h2 {
   margin: 18px 0 10px;
   color: var(--theme-heading);
@@ -852,10 +857,43 @@ body {
 }
 
 .assistant-card {
+  position: relative;
   padding: 26px;
   min-height: 320px;
   display: flex;
   flex-direction: column;
+}
+
+.assistant-card__delete {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 141, 178, 0.22);
+  border-radius: 14px;
+  background: rgba(86, 23, 45, 0.24);
+  color: #ff9abe;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.assistant-card__delete:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(123, 36, 69, 0.4);
+}
+
+.assistant-card__delete:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.assistant-card__delete .dashboard-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .assistant-card h3,
@@ -1132,6 +1170,51 @@ body {
 
 .dashboard-create-modal {
   width: min(100%, 560px);
+}
+
+.dashboard-delete-modal {
+  width: min(100%, 520px);
+}
+
+.dashboard-delete-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.dashboard-delete-modal__cancel,
+.dashboard-delete-modal__confirm {
+  border: 0;
+  border-radius: 16px;
+  padding: 14px 20px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-delete-modal__cancel {
+  background: rgba(44, 43, 62, 0.82);
+  color: #ece7ff;
+  border: 1px solid rgba(131, 92, 199, 0.22);
+}
+
+.dashboard-delete-modal__confirm {
+  background: linear-gradient(135deg, #c0265b 0%, #ff5f93 100%);
+  color: #ffffff;
+  box-shadow: 0 16px 30px rgba(123, 36, 69, 0.35);
+}
+
+.dashboard-delete-modal__cancel:hover:not(:disabled),
+.dashboard-delete-modal__confirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.dashboard-delete-modal__cancel:disabled,
+.dashboard-delete-modal__confirm:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 
 .dashboard-file-list {
