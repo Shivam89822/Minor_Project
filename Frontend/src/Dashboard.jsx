@@ -273,9 +273,18 @@ function Dashboard() {
 
   const profileInitial = useMemo(() => userName.trim().charAt(0).toUpperCase() || 'C', [userName])
 
+  const clearAuthAndRedirect = (message = 'Login expired. Please login again.') => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userEmail')
+    localStorage.removeItem('userName')
+    setDashboardError(message)
+    navigate('/')
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('userEmail')
+    localStorage.removeItem('userName')
     setIsProfileMenuOpen(false)
     navigate('/')
   }
@@ -326,6 +335,10 @@ function Dashboard() {
 
       const data = await response.json()
       if (!response.ok) {
+        if (response.status === 401) {
+          clearAuthAndRedirect('Session expired. Please login again.')
+          return
+        }
         throw new Error(data.detail || 'Unable to load assistants.')
       }
 
@@ -413,6 +426,10 @@ function Dashboard() {
 
       const data = await response.json()
       if (!response.ok) {
+        if (response.status === 401) {
+          clearAuthAndRedirect('Session expired. Please login again.')
+          return
+        }
         throw new Error(data.detail || 'Unable to delete assistant.')
       }
 

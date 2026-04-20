@@ -165,6 +165,14 @@ function AssistantChatPage() {
 
   const token = localStorage.getItem('token')
 
+  const handleUnauthorized = (message = 'Session expired. Please login again.') => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userEmail')
+    localStorage.removeItem('userName')
+    setErrorMessage(message)
+    navigate('/')
+  }
+
   const loadAssistant = useCallback(async ({ silent = false } = {}) => {
     if (!token) {
       setErrorMessage('Missing login token. Please login again.')
@@ -185,6 +193,10 @@ function AssistantChatPage() {
 
       const data = await response.json()
       if (!response.ok) {
+        if (response.status === 401) {
+          handleUnauthorized('Session expired. Please login again.')
+          return
+        }
         throw new Error(data.detail || 'Unable to load assistant.')
       }
 
@@ -254,6 +266,51 @@ function AssistantChatPage() {
     return ''
   }, [assistant])
 
+  const uploadedFiles = useMemo(() => {
+    const fromAssistantItems = Array.isArray(assistant?.source_file_items)
+      ? assistant.source_file_items
+          .map((item) => ({
+            name: typeof item?.name === 'string' ? item.name.trim() : '',
+            url: typeof item?.url === 'string' ? item.url.trim() : '',
+          }))
+          .filter((item) => item.name)
+      : []
+
+    if (fromAssistantItems.length > 0) {
+      return fromAssistantItems
+    }
+
+    const fromAssistantNames = Array.isArray(assistant?.source_files)
+      ? assistant.source_files
+          .filter((fileName) => typeof fileName === 'string' && fileName.trim())
+          .map((name) => ({ name: name.trim(), url: '' }))
+      : []
+
+    if (fromAssistantNames.length > 0) {
+      return fromAssistantNames
+    }
+
+    const fallbackFromMessages = []
+    const seen = new Set()
+    for (const message of messages) {
+      const matches = Array.isArray(message?.matches) ? message.matches : []
+      for (const match of matches) {
+        const source = typeof match?.source === 'string' ? match.source.trim() : ''
+        if (!source) {
+          continue
+        }
+        const key = source.toLowerCase()
+        if (seen.has(key)) {
+          continue
+        }
+        seen.add(key)
+        fallbackFromMessages.push({ name: source, url: '' })
+      }
+    }
+
+    return fallbackFromMessages
+  }, [assistant, messages])
+
   const handleSend = async (event) => {
     event.preventDefault()
     const trimmedQuestion = question.trim()
@@ -286,6 +343,10 @@ function AssistantChatPage() {
 
       const data = await response.json()
       if (!response.ok) {
+        if (response.status === 401) {
+          handleUnauthorized('Session expired. Please login again.')
+          return
+        }
         throw new Error(data.detail || 'Unable to query assistant.')
       }
 
@@ -467,6 +528,38 @@ function AssistantChatPage() {
                   List key points with citations
                 </button>
               </div>
+            </section>
+
+            <section className="dashboard-panel">
+              <div className="dashboard-panel__heading">
+                <h2>Uploaded Files</h2>
+              </div>
+              {uploadedFiles.length > 0 ? (
+                <div className="chat-uploaded-files">
+                  {uploadedFiles.map((file) => (
+                    file.url ? (
+                      <a
+                        key={`${file.name}-${file.url}`}
+                        className="chat-uploaded-files__item chat-uploaded-files__item--link"
+                        title={file.name}
+                        href={file.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {file.name}
+                      </a>
+                    ) : (
+                      <span key={file.name} className="chat-uploaded-files__item" title={file.name}>
+                        {file.name}
+                      </span>
+                    )
+                  ))}
+                </div>
+              ) : (
+                <p className="chat-uploaded-files__empty">
+                  No file names are available for this assistant yet.
+                </p>
+              )}
             </section>
           </aside>
         </section>

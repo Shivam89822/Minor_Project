@@ -581,6 +581,8 @@ def chat_with_assistant(
     else:
         fallback_answer = "No relevant context was found in this assistant's knowledge base."
     final_answer = (generated_answer_result or {}).get("answer") or fallback_answer
+    is_out_of_context_answer = final_answer.strip() == OUT_OF_CONTEXT_REPLY
+    returned_matches = [] if is_out_of_context_answer else formatted_matches
 
     user_message = models.ChatMessage(
         assistant_id=assistant.id,
@@ -594,7 +596,7 @@ def chat_with_assistant(
         assistant_id=assistant.id,
         role="assistant",
         text=final_answer,
-        matches_json=json.dumps(formatted_matches),
+        matches_json=json.dumps(returned_matches),
         created_at=datetime.utcnow(),
     )
 
@@ -605,7 +607,7 @@ def chat_with_assistant(
         "assistant": _serialize_assistant(assistant),
         "question": question,
         "answer": final_answer,
-        "matches": formatted_matches,
+        "matches": returned_matches,
         "answer_source": "gemini" if (generated_answer_result or {}).get("used") and final_answer != fallback_answer else "fallback",
         "gemini_used": bool((generated_answer_result or {}).get("used")),
         "gemini_reason": (generated_answer_result or {}).get("reason"),

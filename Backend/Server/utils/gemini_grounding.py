@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -9,6 +10,18 @@ DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
 OUT_OF_CONTEXT_REPLY = "Out of context."
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
+
+def _retry_delay_from_error(error, attempt):
+    retry_after = getattr(error, "headers", {}).get("Retry-After")
+    if retry_after:
+        try:
+            return max(0.5, float(retry_after))
+        except (TypeError, ValueError):
+            pass
+
+    # Keep retries short so chat stays responsive while still smoothing over
+    # transient upstream failures.
+    return min(6.0, 1.5 * (2 ** attempt))
 
 def _citation_line(match):
     metadata = match.get("metadata") or {}
@@ -118,13 +131,46 @@ def _call_gemini(api_key, model_name, system_instruction, user_prompt, max_outpu
         method="POST",
     )
 
-    with urlopen(request, timeout=25) as response:
-        payload = json.loads(response.read().decode("utf-8"))
+    last_error = None
+    for attempt in range(3):
+        try:
+            with urlopen(request, timeout=25) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+            return _extract_answer_text(payload)
+        except HTTPError as exc:
+            last_error = exc
+            if exc.code not in {429, 500, 502, 503, 504} or attempt == 2:
+                raise
 
-    return _extract_answer_text(payload)
+            delay_seconds = _retry_delay_from_error(exc, attempt)
+            print(
+                f"DEBUG: Gemini transient HTTP {exc.code}; "
+                f"retrying in {delay_seconds:.1f}s (attempt {attempt + 2}/3)"
+            )
+            time.sleep(delay_seconds)
+        except URLError as exc:
+            last_error = exc
+            if attempt == 2:
+                raise
+
+            delay_seconds = min(6.0, 1.5 * (2 ** attempt))
+            print(
+                f"DEBUG: Gemini network error; retrying in {delay_seconds:.1f}s "
+                f"(attempt {attempt + 2}/3): {exc}"
+            )
+            time.sleep(delay_seconds)
+
+    if last_error:
+        raise last_error
+
+    return ""
 
 
 def generate_grounded_answer(question, matches):
+    print(f"DEBUG: Question: {question}")
+    print(f"DEBUG: Number of matches: {len(matches)}")
+    for i, match in enumerate(matches[:3]):  # Log first 3 matches
+        print(f"DEBUG: Match {i+1}: {match.get('text', '')[:200]}...")
     api_key = (
         os.getenv("GEMINI_API_KEY", "").strip()
         or os.getenv("GOOGLE_API_KEY", "").strip()
@@ -138,6 +184,8 @@ def generate_grounded_answer(question, matches):
         }
 
     context = _build_context(matches)
+    print(f"DEBUG: Built context length: {len(context)}")
+    print(f"DEBUG: Context preview: {context[:500]}...")
     if not context:
         return {
             "answer": OUT_OF_CONTEXT_REPLY,
@@ -176,6 +224,7 @@ def generate_grounded_answer(question, matches):
     )
 
     try:
+        print("DEBUG: Calling Gemini API...")
         answer_text = _call_gemini(
             api_key=api_key,
             model_name=model_name,
@@ -183,6 +232,7 @@ def generate_grounded_answer(question, matches):
             user_prompt=user_prompt,
             max_output_tokens=1000,
         )
+        print(f"DEBUG: Gemini raw response: {answer_text}")
 
         if _should_expand_answer(question) and _is_too_short(answer_text) and answer_text != OUT_OF_CONTEXT_REPLY:
             structured_system_instruction = (
@@ -217,6 +267,7 @@ def generate_grounded_answer(question, matches):
                 max_output_tokens=1000,
             )
     except (HTTPError, URLError, TimeoutError, ValueError, json.JSONDecodeError) as exc:
+        print(f"DEBUG: Gemini API error: {exc}")
         return {
             "answer": None,
             "used": False,
@@ -239,6 +290,7 @@ def generate_grounded_answer(question, matches):
             "reason": "out_of_context",
         }
 
+    print(f"DEBUG: Final Gemini answer: {answer_text}")
     return {
         "answer": answer_text,
         "used": True,
